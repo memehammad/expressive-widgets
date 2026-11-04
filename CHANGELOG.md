@@ -22,6 +22,9 @@ Expressive redesign.
 - **Live preview** at the top of every widget's settings.
 - **Weather for your current location** (rough location is enough; allow "all the time" for
   updates while the app is closed).
+- Animations keep running when a widget updates or is tapped.
+- Taps open the right app: weather app, calendar, clock (world clocks), alarms, battery usage.
+- Fixed: agenda widget failed to draw on Android 14+.
 - **Card colours:** "Match app icons" (the themed-icon colour, default), neutral or any colour role.
 
 ## 0.1

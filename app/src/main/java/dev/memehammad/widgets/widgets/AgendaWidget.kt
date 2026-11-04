@@ -19,6 +19,7 @@ import dev.memehammad.widgets.textAt
 import dev.memehammad.widgets.Cfg
 import dev.memehammad.widgets.Kind
 import dev.memehammad.widgets.MainActivity
+import dev.memehammad.widgets.OpenActivity
 import dev.memehammad.widgets.R
 import dev.memehammad.widgets.Widgets
 import dev.memehammad.widgets.card
@@ -169,7 +170,7 @@ object AgendaWidget : Kind(
         v.setPendingIntentTemplate(
             R.id.a_list,
             PendingIntent.getActivity(
-                context, 6500 + widgetId, Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                context, 6500 + widgetId, Intent(context, OpenActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             ),
         )

@@ -83,9 +83,14 @@ object Blob {
         if (spin) animated(c, shape.spin, color) else static(c, shape, color)
 }
 
+/**
+ * Puts [child] into [container] with a stable id: when the widget updates, the launcher reuses
+ * the existing view instead of inflating a new one, so running animations don't restart.
+ * (removeAllViews keeps stable children for this; anything else in the container is dropped.)
+ */
 fun RemoteViews.blob(container: Int, child: RemoteViews) {
     removeAllViews(container)
-    addView(container, child)
+    addStableView(container, child, 1)
 }
 
 /** Where text goes inside a shape of [side] dp placed at (x, y): centre and side of the square. */

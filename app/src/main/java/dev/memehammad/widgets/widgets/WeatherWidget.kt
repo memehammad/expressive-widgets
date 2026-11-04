@@ -304,15 +304,21 @@ object WeatherWidget : Kind(
             v.setTextViewText(temp, Weather.deg(h.temp))
         }
 
-        // Tap: fetch fresh data now.
-        v.setOnClickPendingIntent(
-            android.R.id.background,
-            PendingIntent.getBroadcast(
-                context, 7000 + widgetId, Intent(context, WeatherRefreshReceiver::class.java),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            ),
-        )
+        // Tap: open the phone's weather app (or a weather search if there is none).
+        v.setOnClickPendingIntent(android.R.id.background, Widgets.activity(context, 7000 + widgetId, weatherApp(context)))
         return v
+    }
+
+    private val weatherApps = listOf(
+        "com.google.android.apps.weather", "com.samsung.android.weather", "com.sec.android.daemonapp",
+        "com.miui.weather2", "net.oneplus.weather", "com.oplus.weather.service", "com.coloros.weather2",
+        "com.motorola.timeweatherwidget", "com.huawei.android.totemweather", "org.breezyweather",
+    )
+
+    private fun weatherApp(context: Context): Intent {
+        val pm = context.packageManager
+        for (pkg in weatherApps) pm.getLaunchIntentForPackage(pkg)?.let { return it }
+        return Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://www.google.com/search?q=weather"))
     }
 
     private fun hourLabel(context: Context, ms: Long): String =

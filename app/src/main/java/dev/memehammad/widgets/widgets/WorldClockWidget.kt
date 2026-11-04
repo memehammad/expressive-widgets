@@ -96,7 +96,10 @@ object WorldClockWidget : Kind(
             v.setTextViewText(city, c.first)
             v.setTextViewText(day, dayLabel(tz, now))
         }
-        v.setOnClickPendingIntent(android.R.id.background, Widgets.configIntent(context, widgetId))
+        v.setOnClickPendingIntent(
+            android.R.id.background,
+            Widgets.activity(context, 8000 + widgetId, android.content.Intent(android.provider.AlarmClock.ACTION_SHOW_ALARMS)),
+        )
         return v
     }
 }

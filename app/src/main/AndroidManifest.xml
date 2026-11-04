@@ -13,6 +13,16 @@
 
     <!-- Apps we open: Shizuku (setup). -->
     <queries>
+        <package android:name="com.google.android.apps.weather" />
+        <package android:name="com.samsung.android.weather" />
+        <package android:name="com.sec.android.daemonapp" />
+        <package android:name="com.miui.weather2" />
+        <package android:name="net.oneplus.weather" />
+        <package android:name="com.oplus.weather.service" />
+        <package android:name="com.coloros.weather2" />
+        <package android:name="com.motorola.timeweatherwidget" />
+        <package android:name="com.huawei.android.totemweather" />
+        <package android:name="org.breezyweather" />
         <package android:name="moe.shizuku.privileged.api" />
     </queries>
 
@@ -23,6 +33,14 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Widgets">
+
+        <activity
+            android:name=".OpenActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <activity
             android:name=".MainActivity"
