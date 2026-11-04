@@ -1,57 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shape clock (inline). -->
+<!-- Clock canvas: shapes, texts and the date chip are sized and placed in code for each widget size. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToOutline="true"
-    android:padding="6dp">
-
-    <ImageView
-        android:id="@+id/c_shape"
-        android:src="@drawable/shp_cookie9"
-        android:tint="@color/primary_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter" />
+    android:clipToOutline="true">
 
     <FrameLayout
+        android:id="@+id/c_stage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="22dp">
+        android:layout_gravity="center">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/c_b0"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_gravity="top|left"
+            android:padding="0dp">
 
-            <TextClock
-                android:id="@+id/c_time"
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:autoSizeMaxTextSize="80sp"
-                android:autoSizeMinTextSize="12sp"
-                android:autoSizeTextType="uniform"
-                android:fontFamily="sans-serif-medium"
-                android:format12Hour="h:mm"
-                android:format24Hour="HH:mm"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:textColor="@color/primary_on_container"
-                android:maxLines="1" />
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shp_cookie9"
+                android:tint="@color/primary_container" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/c_b1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:visibility="gone" />
+
+        <AnalogClock
+            android:id="@+id/c_analog"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:dial="@drawable/shp_cookie12"
+            android:hand_hour="@drawable/hand_hour"
+            android:hand_minute="@drawable/hand_minute"
+            android:hand_second="@drawable/hand_second"
+            android:visibility="gone" />
+
+        <TextClock
+            android:id="@+id/c_t0"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:format12Hour="h:mm"
+            android:format24Hour="HH:mm"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/primary_on_container"
+            android:textSize="30sp" />
+
+        <TextClock
+            android:id="@+id/c_t1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:format12Hour="mm"
+            android:format24Hour="mm"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/c_chip"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/c_chip_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/w_pill" />
 
             <TextClock
                 android:id="@+id/c_date"
-                android:textColor="@color/primary_on_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:fontFamily="sans-serif-medium"
-                android:format12Hour="EEE d MMM"
-                android:format24Hour="EEE d MMM"
-                android:maxLines="1"
-                android:textSize="13sp" />
-        </LinearLayout>
+                android:format12Hour="EEE d"
+                android:format24Hour="EEE d"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1" />
+        </FrameLayout>
     </FrameLayout>
 </FrameLayout>

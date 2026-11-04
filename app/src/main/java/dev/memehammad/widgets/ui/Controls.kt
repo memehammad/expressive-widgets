@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import dev.memehammad.widgets.Shape
+import dev.memehammad.widgets.R
 import dev.memehammad.widgets.Shapes
 
 @Composable
@@ -54,33 +54,48 @@ fun Group(content: @Composable () -> Unit) {
     }
 }
 
-/** Horizontal strip of every shape; the selected one is filled with the accent colour. */
+/**
+ * Horizontal strip of shapes; the selected one is filled with the accent colour. [only] limits the
+ * choice; [autoLabel] adds a first "automatic" entry with id "auto".
+ */
 @Composable
-fun ShapePicker(selected: String, onPick: (Shape) -> Unit) {
+fun ShapePicker(selected: String, only: List<String>? = null, autoLabel: String? = null, onPick: (String) -> Unit) {
     val scheme = MaterialTheme.colorScheme
+    val shapes = Shapes.all.filter { only == null || it.id in only }
+    val sel = if (selected == "auto") "auto" else Shapes.byId(selected).id
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        items(Shapes.all, key = { it.id }) { s ->
-            val sel = s.id == selected
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { onPick(s) }) {
-                Image(
-                    painterResource(s.res),
-                    contentDescription = s.label,
-                    colorFilter = ColorFilter.tint(if (sel) scheme.primary else scheme.surfaceContainerHighest),
-                    modifier = Modifier.size(52.dp),
-                )
-                Text(
-                    s.label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (sel) scheme.primary else scheme.onSurfaceVariant,
-                    modifier = Modifier.width(64.dp).padding(top = 4.dp),
-                    maxLines = 1,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                )
+        if (autoLabel != null) {
+            item(key = "auto") {
+                PickerItem(R.drawable.shp_sunny, autoLabel, sel == "auto", scheme.tertiary) { onPick("auto") }
             }
         }
+        items(shapes, key = { it.id }) { s ->
+            PickerItem(s.res, s.label, s.id == sel, scheme.primary) { onPick(s.id) }
+        }
+    }
+}
+
+@Composable
+private fun PickerItem(res: Int, label: String, selected: Boolean, accent: Color, onClick: () -> Unit) {
+    val scheme = MaterialTheme.colorScheme
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable(onClick = onClick)) {
+        Image(
+            painterResource(res),
+            contentDescription = label,
+            colorFilter = ColorFilter.tint(if (selected) accent else scheme.surfaceContainerHighest),
+            modifier = Modifier.size(52.dp),
+        )
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (selected) accent else scheme.onSurfaceVariant,
+            modifier = Modifier.width(64.dp).padding(top = 4.dp),
+            maxLines = 1,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        )
     }
 }
 

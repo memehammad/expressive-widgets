@@ -10,4 +10,8 @@
     <string name="w_battery_desc">Charge level as a filling shape</string>
     <string name="w_toggles">Quick toggles</string>
     <string name="w_toggles_desc">System toggles in expressive shapes</string>
+    <string name="w_weather">Weather</string>
+    <string name="w_weather_desc">Weather in a shape that matches it</string>
+    <string name="w_agenda">Agenda</string>
+    <string name="w_agenda_desc">Today\'s date and your next events</string>
 </resources>

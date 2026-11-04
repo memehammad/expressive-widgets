@@ -2,6 +2,24 @@
 
 The newest section is used as the release notes on GitHub (and shown in Obtainium).
 
+## 0.2
+
+Expressive redesign.
+
+- **The real Material 3 Expressive shapes:** all 35 official shapes (cookies, clovers, sunny,
+  puffy, ghost-ish, bursts, pixel shapes and more), computed with Google's own shape library
+  instead of drawn by hand.
+- **Shape clock, four styles:** Duo (hours and minutes in two overlapping shapes and colours),
+  Stacked, Inline and Analog (any shape as the dial, rounded hands, an orbiting seconds dot).
+  Text is sized for the exact widget size, so it never spills out of its shape. Date as a chip.
+- **Battery:** the shape fills with liquid and two moving waves. Charging adds a morphing badge
+  with a bolt; low battery turns red.
+- **Weather:** shows the weather as a shape (puffy clouds, drippy rain, a snowflake burst) and
+  sunshine as a turning, breathing sun. Plus calendar **Agenda** widget.
+- **Animation:** shapes can slowly turn (clock, weather, toggles, agenda). Toggles that are on
+  get their own colour each.
+- World clocks: each city in its own shape and colour.
+
 ## 0.1
 
 First preview.

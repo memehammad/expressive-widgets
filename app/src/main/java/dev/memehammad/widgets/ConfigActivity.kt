@@ -35,6 +35,7 @@ import dev.memehammad.widgets.ui.Label
 import dev.memehammad.widgets.ui.Picks
 import dev.memehammad.widgets.ui.ShapePicker
 import dev.memehammad.widgets.ui.SwitchRow
+import dev.memehammad.widgets.widgets.ClockWidget
 import dev.memehammad.widgets.widgets.TogglesWidget
 import dev.memehammad.widgets.widgets.WorldClockWidget
 
@@ -82,14 +83,25 @@ class ConfigActivity : ComponentActivity() {
                             )
                         }
 
-                        item { Label("Shape") }
-                        item { Group { ShapePicker(cfg.shape.id) { set("shape", it.id) } } }
+                        item { Label(if (kind.id == "clock") "Shape (hours)" else "Shape") }
+                        item {
+                            Group {
+                                when (kind.id) {
+                                    "battery" -> ShapePicker(cfg.shape.id, only = Liquid.shapes) { set("shape", it) }
+                                    "weather" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Weather") { set("shape", it) }
+                                    else -> ShapePicker(cfg.shape.id) { set("shape", it) }
+                                }
+                            }
+                        }
 
                         item { Label("Colour") }
                         item {
                             Group {
                                 Choice(Role.entries.map { it to it.label }, cfg.role) { set("role", it.id) }
                                 Choice(listOf("tonal" to "Soft", "bold" to "Bold"), cfg.str("fill", "tonal")) { set("fill", it) }
+                                if (kind.id in listOf("clock", "weather", "toggles", "agenda")) {
+                                    SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id != "agenda")) { set("animate", it) }
+                                }
                                 SwitchRow("Card background", "A rounded background behind the widget", cfg.card) { set("card", it) }
                             }
                         }
@@ -113,10 +125,30 @@ class ConfigActivity : ComponentActivity() {
     private fun KindOptions(kind: Kind, cfg: Cfg, set: (String, Any) -> Unit) {
         when (kind.id) {
             "clock" -> {
+                val style = cfg.str("style", cfg.str("layout", "duo"))
                 Label("Clock")
                 Group {
-                    Choice(listOf("stacked" to "Hours over minutes", "inline" to "Inline"), cfg.str("layout", "stacked")) { set("layout", it) }
-                    SwitchRow("Show date", null, cfg.bool("date", true)) { set("date", it) }
+                    Choice(ClockWidget.styles, style) { set("style", it) }
+                    SwitchRow("Date", "A little date chip", cfg.bool("date", true)) { set("date", it) }
+                    if (style == "analog") SwitchRow("Seconds", "A dot that orbits the dial", cfg.bool("seconds", true)) { set("seconds", it) }
+                }
+                Label(if (style == "duo") "Minutes shape and colour" else "Accent colour")
+                Group {
+                    if (style == "duo") ShapePicker(cfg.str("shape2", "clover4")) { set("shape2", it) }
+                    Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) }
+                }
+            }
+            "battery" -> {
+                Label("Battery")
+                Group {
+                    Text(
+                        "Charging shows a morphing badge. Accent colour:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                    )
+                    Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) }
+                    ShizukuRow(text = "Battery health needs Shizuku; watts, temperature and cycles work without it.")
                 }
             }
             "world" -> {
@@ -126,7 +158,7 @@ class ConfigActivity : ComponentActivity() {
                         WorldClockWidget.cities.map { it.first to it.first },
                         cfg.list("cities", listOf("London", "New York", "Tokyo")), 3,
                     ) { set("cities", it) }
-                    SwitchRow("Mixed colours", "Each city in a different colour role", cfg.bool("mixed", true)) { set("mixed", it) }
+                    SwitchRow("Mixed", "Each city in its own shape and colour", cfg.bool("mixed", true)) { set("mixed", it) }
                 }
             }
             "toggles" -> {
@@ -137,14 +169,11 @@ class ConfigActivity : ComponentActivity() {
                         cfg.list("toggles", listOf("wifi", "data", "bluetooth", "flashlight")), 4,
                     ) { set("toggles", it) }
                     SwitchRow("Labels", "Name under each toggle", cfg.bool("labels", true)) { set("labels", it) }
+                    SwitchRow("Mixed colours", "Each toggle in its own colour when on", cfg.bool("mixed", true)) { set("mixed", it) }
                     ShizukuRow()
                 }
                 Label("Shape when off")
-                Group { ShapePicker(cfg.str("shape_off", "squircle")) { set("shape_off", it.id) } }
-            }
-            "battery" -> {
-                Label("Battery")
-                Group { ShizukuRow(text = "Battery health needs Shizuku; watts, temperature and cycles work without it.") }
+                Group { ShapePicker(cfg.str("shape_off", "circle")) { set("shape_off", it) } }
             }
         }
     }

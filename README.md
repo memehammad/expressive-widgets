@@ -1,19 +1,22 @@
 # Expressive Widgets
 
 Material 3 Expressive home screen widgets for Android: clocks, world clocks, battery and quick
-toggles in 16 expressive shapes, coloured from your wallpaper. Optional
+toggles in the 35 official Material 3 Expressive shapes, coloured from your wallpaper. Optional
 [Shizuku](https://shizuku.rikka.app/) support makes toggles switch directly and adds battery
 health.
 
 [<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/memehammad/expressive-widgets)
 
-Android 12 or newer. Work in progress: weather, calendar and Home Assistant widgets are coming.
+Android 12 or newer. Work in progress: Home Assistant widgets are coming.
 
 ## Widgets
 
-- **Shape clock:** the time inside a shape, hours over minutes or inline, with the date.
+- **Shape clock:** Duo (hours and minutes in two shapes), stacked, inline or analog with a shape as the dial.
+- **Weather:** temperature and conditions in a shape that matches the weather (Open-Meteo, no
+  account); wider sizes add highs and lows, rain and the next hours.
+- **Agenda:** today's date in a shape and your next events from the calendars on your phone.
 - **World clocks:** up to three cities with local time, day and time difference.
-- **Battery:** a shape that fills with your charge; wider sizes show watts, time to full,
+- **Battery:** a shape that fills with wavy, moving liquid; wider sizes show watts, time to full,
   temperature, cycles and, with Shizuku, battery health.
 - **Quick toggles:** Wi-Fi, mobile data, Bluetooth, airplane mode, flashlight, battery saver,
   Do not disturb, dark theme, location, auto-rotate, smooth display and NFC.
@@ -34,7 +37,8 @@ commands. Without it, toggles open the matching settings panel instead.
 
 ## Building
 
-JDK 17 or 21 and the Android SDK, then `./gradlew assembleRelease`. Shapes are generated with
+JDK 17 or 21 and the Android SDK, then `./gradlew assembleRelease`. Shapes come from Google's
+`androidx.graphics.shapes` (see `tools/shapegen`) and are turned into resources with
 `python3 tools/gen_shapes.py`.
 
 ## License

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Agenda (small): date in a shape and the next event. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToOutline="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <FrameLayout
+        android:id="@+id/a_header"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:id="@+id/a_frame"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center">
+
+            <FrameLayout
+                android:id="@+id/a_blob"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/shp_cookie12"
+                    android:tint="@color/primary_container" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/a_day"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="14dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="4"
+                android:textColor="@color/primary_on_container"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/a_weekday"
+                android:layout_width="80dp"
+                android:layout_height="18dp"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="50dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="Wed"
+                android:textColor="@color/primary_on_container"
+                android:textSize="12sp" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/a_month"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/a_next_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/w_pill"
+        android:backgroundTint="@color/w_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp">
+
+        <TextView
+            android:id="@+id/a_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
+            android:textColor="@color/w_text"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/a_next_when"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/w_text2"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/a_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/a_empty"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+</LinearLayout>

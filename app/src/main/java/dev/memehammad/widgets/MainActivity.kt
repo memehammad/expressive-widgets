@@ -1,5 +1,6 @@
 package dev.memehammad.widgets
 
+import android.Manifest
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
@@ -8,7 +9,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,13 +35,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import dev.memehammad.widgets.ui.AppTheme
 import dev.memehammad.widgets.ui.Label
 import dev.memehammad.widgets.ui.ShapeIcon
+import dev.memehammad.widgets.ui.SwitchRow
+import dev.memehammad.widgets.widgets.AgendaWidget
+import dev.memehammad.widgets.widgets.Weather
+import dev.memehammad.widgets.widgets.WeatherWidget
+import kotlinx.coroutines.launch
 
 /** Catalogue of widgets with an "Add" button each, plus Shizuku status. */
 class MainActivity : ComponentActivity() {
@@ -49,9 +61,18 @@ class MainActivity : ComponentActivity() {
         setContent { AppTheme { Screen() } }
     }
 
+    private val calendar = mutableStateOf(false)
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        calendar.value = AgendaWidget.allowed(this)
+        Widgets.updateAll(this)
+    }
+
     override fun onResume() {
         super.onResume()
         shizuku.value = Shell.running() to Shell.granted()
+        calendar.value = AgendaWidget.allowed(this)
         Widgets.updateAll(this)
     }
 
@@ -64,7 +85,7 @@ class MainActivity : ComponentActivity() {
     private fun Screen() {
         val scheme = MaterialTheme.colorScheme
         val (running, granted) = shizuku.value
-        val shapes = listOf("cookie9", "clover", "sunny", "flower", "burst", "cookie6", "pentagon", "gem")
+        val shapes = listOf("cookie9", "clover4", "sunny", "puffy", "softburst", "ghostish", "flower", "heart")
         val roles = Role.entries
         Scaffold(containerColor = scheme.surface) { pad ->
             LazyColumn(
@@ -116,6 +137,25 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                item { Label("Weather") }
+                item { WeatherCard() }
+                item { Label("Calendar") }
+                item {
+                    Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+                        Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(if (calendar.value) "Calendar access allowed" else "Calendar access needed", style = MaterialTheme.typography.titleMedium)
+                                Text(
+                                    "The agenda widget reads your events on this phone. Nothing leaves your device.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = scheme.onSurfaceVariant,
+                                )
+                            }
+                            if (!calendar.value) TextButton(onClick = { requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR), 2) }) { Text("Allow") }
+                        }
+                    }
+                }
+
                 item { Label("Shizuku") }
                 item {
                     Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
@@ -159,6 +199,80 @@ class MainActivity : ComponentActivity() {
                             color = scheme.onSurfaceVariant,
                         )
                     }
+                }
+            }
+        }
+    }
+
+    /** Location search (Open-Meteo geocoding) and units for the weather widget. */
+    @Composable
+    private fun WeatherCard() {
+        val scheme = MaterialTheme.colorScheme
+        val scope = rememberCoroutineScope()
+        var place by remember { mutableStateOf(Weather.place(this)) }
+        var fahrenheit by remember { mutableStateOf(Weather.fahrenheit(this)) }
+        var query by remember { mutableStateOf("") }
+        var results by remember { mutableStateOf<List<Weather.Place>>(emptyList()) }
+        var searching by remember { mutableStateOf(false) }
+        fun refresh() = scope.launch {
+            Weather.refresh(this@MainActivity, maxAgeMs = 0)
+            Widgets.update(this@MainActivity, WeatherWidget)
+        }
+        Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(vertical = 12.dp)) {
+                Text(
+                    place?.name ?: "No location set",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                )
+                Text(
+                    "Search for your city. Forecasts from Open-Meteo, no account needed.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = scheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                )
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    singleLine = true,
+                    placeholder = { Text("City") },
+                    shape = CircleShape,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = {
+                        if (query.isNotBlank()) scope.launch {
+                            searching = true
+                            results = Weather.search(query.trim())
+                            searching = false
+                        }
+                    }),
+                    trailingIcon = {
+                        TextButton(onClick = {
+                            if (query.isNotBlank()) scope.launch {
+                                searching = true
+                                results = Weather.search(query.trim())
+                                searching = false
+                            }
+                        }) { Text(if (searching) "…" else "Search") }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+                for (r in results) {
+                    Text(
+                        r.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.fillMaxWidth().clickable {
+                            Weather.setPlace(this@MainActivity, r)
+                            place = r
+                            results = emptyList()
+                            query = ""
+                            refresh()
+                        }.padding(horizontal = 20.dp, vertical = 10.dp),
+                    )
+                }
+                SwitchRow("Fahrenheit", null, fahrenheit) {
+                    fahrenheit = it
+                    Weather.setFahrenheit(this@MainActivity, it)
+                    refresh()
                 }
             }
         }

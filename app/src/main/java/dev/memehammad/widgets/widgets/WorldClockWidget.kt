@@ -3,6 +3,9 @@ package dev.memehammad.widgets.widgets
 import android.content.Context
 import android.widget.RemoteViews
 import dev.memehammad.widgets.BaseProvider
+import dev.memehammad.widgets.Blob
+import dev.memehammad.widgets.Shapes
+import dev.memehammad.widgets.blob
 import dev.memehammad.widgets.Cfg
 import dev.memehammad.widgets.Kind
 import dev.memehammad.widgets.R
@@ -82,8 +85,11 @@ object WorldClockWidget : Kind(
             if (c == null) return@forEachIndexed
             val tz = TimeZone.getTimeZone(c.second)
             val p = cfg.paint(if (cfg.bool("mixed", true)) roles[i] else cfg.role)
-            v.setImageViewResource(shape, cfg.shape.res)
-            v.tint(shape, p.fill)
+            val mixed = cfg.bool("mixed", true)
+            // Mixed: each city gets its own shape as well as its own colour.
+            val trio = listOf(cfg.shape.id) + listOf("clover4", "sunny", "cookie9").filter { it != cfg.shape.id }
+            val sh = if (mixed) Shapes.byId(trio[i]) else cfg.shape
+            v.blob(shape, Blob.static(context, sh, p.fill))
             v.textColor(hour, p.on)
             v.setString(hour, "setTimeZone", c.second)
             v.setString(time, "setTimeZone", c.second)

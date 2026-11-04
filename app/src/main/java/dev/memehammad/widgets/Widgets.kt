@@ -12,6 +12,8 @@ import dev.memehammad.widgets.widgets.BatteryWidget
 import dev.memehammad.widgets.widgets.ClockWidget
 import dev.memehammad.widgets.widgets.TogglesWidget
 import dev.memehammad.widgets.widgets.WorldClockWidget
+import dev.memehammad.widgets.widgets.WeatherWidget
+import dev.memehammad.widgets.widgets.AgendaWidget
 
 /** One widget type: how to draw it, plus what the app's catalogue says about it. */
 abstract class Kind(
@@ -28,7 +30,7 @@ abstract class Kind(
 }
 
 object Widgets {
-    val kinds: List<Kind> by lazy { listOf(ClockWidget, WorldClockWidget, BatteryWidget, TogglesWidget) }
+    val kinds: List<Kind> by lazy { listOf(ClockWidget, WeatherWidget, AgendaWidget, WorldClockWidget, BatteryWidget, TogglesWidget) }
 
     fun kindOf(context: Context, widgetId: Int): Kind? {
         val info = AppWidgetManager.getInstance(context).getAppWidgetInfo(widgetId) ?: return null

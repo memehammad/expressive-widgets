@@ -16,6 +16,9 @@ import android.provider.Settings
 import android.util.SizeF
 import android.widget.RemoteViews
 import dev.memehammad.widgets.BaseProvider
+import dev.memehammad.widgets.Blob
+import dev.memehammad.widgets.Role
+import dev.memehammad.widgets.blob
 import dev.memehammad.widgets.Cfg
 import dev.memehammad.widgets.Kind
 import dev.memehammad.widgets.R
@@ -107,7 +110,7 @@ object TogglesWidget : Kind(
         }
     }
 
-    override fun defaults() = Cfg().with("shape", "cookie9").with("shape_off", "squircle").with("role", "primary")
+    override fun defaults() = Cfg().with("shape", "cookie9").with("shape_off", "circle").with("animate", true).with("role", "primary")
         .with("toggles", listOf("wifi", "data", "bluetooth", "flashlight")).with("labels", true)
 
     private val tiles = arrayOf(
@@ -129,15 +132,21 @@ object TogglesWidget : Kind(
         val chosen = cfg.list("toggles", listOf("wifi", "data", "bluetooth", "flashlight")).mapNotNull { Toggle.byId(it) }.take(4)
         val shell = Shell.granted()
         val onShape = cfg.shape
-        val offShape = Shapes.byId(cfg.str("shape_off", "squircle"))
+        val offShape = Shapes.byId(cfg.str("shape_off", "circle"))
         tiles.forEachIndexed { i, (root, shape, icon, label) ->
             val t = chosen.getOrNull(i)
             v.show(root, t != null)
             if (t == null) return@forEachIndexed
             val on = isOn(context, t)
-            val p = cfg.paint(bold = true)
-            v.setImageViewResource(shape, if (on) onShape.res else offShape.res)
-            v.tint(shape, if (on) p.fill else R.color.w_surface)
+            // On: the chosen shape, slowly turning, in a bold colour (each tile its own role if mixed).
+            // Off: a calm static shape.
+            val role = if (cfg.bool("mixed", true)) Role.entries[(cfg.role.ordinal + i) % 3] else cfg.role
+            val p = cfg.paint(role, bold = true)
+            v.blob(
+                shape,
+                if (on) Blob.of(context, onShape, p.fill, cfg.bool("animate", true))
+                else Blob.static(context, offShape, R.color.w_surface),
+            )
             v.setImageViewResource(icon, t.icon)
             v.tint(icon, if (on) p.on else R.color.w_text2)
             v.setTextViewText(label, t.label)

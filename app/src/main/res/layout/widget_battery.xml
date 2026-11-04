@@ -1,58 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Battery: shape filled to the charge level. -->
+<!-- Battery: a shape filled with moving liquid; wide sizes add details. Placed in code per size. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToOutline="true"
-    android:padding="4dp">
+    android:clipToOutline="true">
+
+    <FrameLayout
+        android:id="@+id/b_stage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <FrameLayout
+            android:id="@+id/b_track"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shp_cookie9"
+                android:tint="@color/secondary_container" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/b_liquid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/lq_cookie9_060"
+                android:tint="@color/secondary_accent" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/b_pct"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="60%"
+            android:textColor="@color/secondary_on_accent"
+            android:textSize="28sp" />
+
         <FrameLayout
             android:id="@+id/b_badge"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/b_track"
-                android:src="@drawable/shp_squircle"
-                android:tint="@color/secondary_container"
+        <ImageView
+            android:id="@+id/b_bolt"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_bolt"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/b_info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/b_title"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:singleLine="true"
+                android:textColor="@color/w_text"
+                android:textSize="16sp" />
 
-            <ImageView
-                android:id="@+id/b_fill"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/b_l1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/w_pill"
+                android:backgroundTint="@color/secondary_container"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:singleLine="true"
+                android:textColor="@color/secondary_on_container"
+                android:textSize="12sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <ImageView
-                    android:id="@+id/b_bolt"
-                    android:visibility="gone"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_bolt" />
-
-                <TextView
-                    android:id="@+id/b_pct"
-                    android:text="75%"
-                    android:textColor="@color/secondary_on_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:autoSizeMaxTextSize="40sp"
-                    android:autoSizeMinTextSize="11sp"
-                    android:autoSizeTextType="uniform"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:maxLines="1" />
-            </LinearLayout>
-        </FrameLayout>
+            <TextView
+                android:id="@+id/b_l2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/w_pill"
+                android:backgroundTint="@color/tertiary_container"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:singleLine="true"
+                android:textColor="@color/tertiary_on_container"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </FrameLayout>
 </FrameLayout>

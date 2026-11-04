@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Weather with place, condition, high/low and next rain. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToOutline="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
+        <FrameLayout
+            android:id="@+id/wx_frame"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <FrameLayout
+                android:id="@+id/wx_blob"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/shp_sunny"
+                    android:tint="@color/primary_container" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/wx_icon"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="31dp"
+                android:layout_marginTop="18dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/w_sun"
+                android:tint="@color/primary_on_container" />
+
+            <TextView
+                android:id="@+id/wx_temp"
+                android:layout_width="96dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="52dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="18°"
+                android:textColor="@color/primary_on_container"
+                android:textSize="22sp" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/wx_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:singleLine="true"
+                android:textColor="@color/w_text"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/wx_cond"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/w_text2"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/wx_range"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/w_text2"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/wx_rain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/w_text"
+                android:textSize="13sp"
+                android:visibility="gone" />
+        </LinearLayout>
+</LinearLayout>

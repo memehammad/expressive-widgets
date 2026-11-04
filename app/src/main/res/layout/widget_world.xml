@@ -21,16 +21,21 @@
         android:orientation="horizontal">
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp">
+            android:layout_width="44dp"
+            android:layout_height="44dp">
 
-            <ImageView
+            <FrameLayout
                 android:id="@+id/ws0"
-                android:src="@drawable/shp_cookie6"
-                android:tint="@color/tertiary_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/shp_cookie9"
+                    android:tint="@color/primary_container" />
+            </FrameLayout>
 
             <TextClock
                 android:id="@+id/wh0"
@@ -90,16 +95,21 @@
         android:orientation="horizontal">
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp">
+            android:layout_width="44dp"
+            android:layout_height="44dp">
 
-            <ImageView
+            <FrameLayout
                 android:id="@+id/ws1"
-                android:src="@drawable/shp_cookie6"
-                android:tint="@color/tertiary_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/shp_clover4"
+                    android:tint="@color/secondary_container" />
+            </FrameLayout>
 
             <TextClock
                 android:id="@+id/wh1"
@@ -159,16 +169,21 @@
         android:orientation="horizontal">
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp">
+            android:layout_width="44dp"
+            android:layout_height="44dp">
 
-            <ImageView
+            <FrameLayout
                 android:id="@+id/ws2"
-                android:src="@drawable/shp_cookie6"
-                android:tint="@color/tertiary_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/shp_sunny"
+                    android:tint="@color/tertiary_container" />
+            </FrameLayout>
 
             <TextClock
                 android:id="@+id/wh2"

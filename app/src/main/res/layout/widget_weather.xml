@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Weather: icon and temperature in a shape matching the weather. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToOutline="true"
+    android:padding="4dp">
+        <FrameLayout
+            android:id="@+id/wx_frame"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center">
+
+            <FrameLayout
+                android:id="@+id/wx_blob"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/shp_sunny"
+                    android:tint="@color/primary_container" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/wx_icon"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="31dp"
+                android:layout_marginTop="18dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/w_sun"
+                android:tint="@color/primary_on_container" />
+
+            <TextView
+                android:id="@+id/wx_temp"
+                android:layout_width="96dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="52dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="18°"
+                android:textColor="@color/primary_on_container"
+                android:textSize="22sp" />
+        </FrameLayout>
+</FrameLayout>
