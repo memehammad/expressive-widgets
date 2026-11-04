@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Expressive Widgets</string>
+    <string name="widget_error">Couldn\'t draw this widget. Tap to open its settings.</string>
+    <string name="w_clock">Shape clock</string>
+    <string name="w_clock_desc">The time inside an expressive shape</string>
+    <string name="w_world">World clocks</string>
+    <string name="w_world_desc">Local time in up to three cities</string>
+    <string name="w_battery">Battery</string>
+    <string name="w_battery_desc">Charge level as a filling shape</string>
+    <string name="w_toggles">Quick toggles</string>
+    <string name="w_toggles_desc">System toggles in expressive shapes</string>
+</resources>
