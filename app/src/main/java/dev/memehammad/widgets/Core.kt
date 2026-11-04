@@ -35,12 +35,22 @@ class Cfg(val json: JSONObject = JSONObject()) {
     val shape get() = Shapes.byId(str("shape", "cookie9"))
     val role get() = Role.byId(str("role", "primary"))
     /** "tonal" = soft container colour, "bold" = strong accent colour. */
-    val bold get() = str("fill", "tonal") == "bold"
+    val bold get() = str("fill", "tonal") == "bold" || clashes(role)
     val card get() = bool("card", false)
+    /** Card colour: "icons" matches themed app icons; "surface" neutral; or a colour role. */
+    val cardColor get() = str("cardColor", "icons")
+
+    /** A soft shape would vanish on a card of the same colour, so it goes bold there. */
+    private fun clashes(r: Role) = card && (cardColor == r.id || (cardColor == "icons" && r == Role.PRIMARY))
 
     fun paint(role: Role = this.role, bold: Boolean = this.bold) =
         if (bold) Paint(role.accent, role.onAccent) else Paint(role.container, role.onContainer)
 }
+
+val cardColors = listOf(
+    "icons" to "Match app icons", "surface" to "Neutral",
+    "primary" to "Primary", "secondary" to "Secondary", "tertiary" to "Tertiary",
+)
 
 object Configs {
     private fun prefs(c: Context) = c.getSharedPreferences("widgets", Context.MODE_PRIVATE)
@@ -64,6 +74,13 @@ fun RemoteViews.show(id: Int, visible: Boolean) = setViewVisibility(id, if (visi
 
 /** Applies the optional card background behind a widget. */
 fun RemoteViews.card(cfg: Cfg) {
-    if (cfg.card) setInt(android.R.id.background, "setBackgroundResource", R.drawable.w_bg)
+    val bg = when (cfg.cardColor) {
+        "surface" -> R.drawable.w_bg
+        "primary" -> R.drawable.w_bg_primary
+        "secondary" -> R.drawable.w_bg_secondary
+        "tertiary" -> R.drawable.w_bg_tertiary
+        else -> R.drawable.w_bg_icons
+    }
+    if (cfg.card) setInt(android.R.id.background, "setBackgroundResource", bg)
     else setInt(android.R.id.background, "setBackgroundResource", 0)
 }

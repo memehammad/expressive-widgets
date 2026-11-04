@@ -1,6 +1,13 @@
 package dev.memehammad.widgets.widgets
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
+import android.os.CancellationSignal
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -28,7 +35,10 @@ import dev.memehammad.widgets.tint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.coroutines.resume
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -60,6 +70,65 @@ object Weather {
     fun setPlace(c: Context, place: Place) {
         prefs(c).edit().putString("place", place.name).putFloat("lat", place.lat.toFloat())
             .putFloat("lon", place.lon.toFloat()).remove("data").apply()
+    }
+
+    /** Follow the phone's location instead of a fixed city. */
+    fun auto(c: Context) = prefs(c).getBoolean("auto", false)
+
+    fun setAuto(c: Context, on: Boolean) {
+        prefs(c).edit().putBoolean("auto", on).apply()
+    }
+
+    fun locationAllowed(c: Context) =
+        c.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    fun backgroundAllowed(c: Context) =
+        c.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    /** Rough current position (recent last fix, else a fresh one) and a town name for it. */
+    @SuppressLint("MissingPermission")
+    suspend fun locate(c: Context): Place? {
+        if (!locationAllowed(c)) return null
+        val lm = c.getSystemService(LocationManager::class.java) ?: return null
+        val providers = listOf(LocationManager.FUSED_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
+            .filter { runCatching { lm.isProviderEnabled(it) }.getOrDefault(false) }
+        val last = providers.mapNotNull { runCatching { lm.getLastKnownLocation(it) }.getOrNull() }.maxByOrNull { it.time }
+        val loc = if (last != null && System.currentTimeMillis() - last.time < 30 * 60_000L) last
+        else fresh(c, lm, providers.firstOrNull()) ?: last ?: return null
+        val name = withContext(Dispatchers.IO) {
+            runCatching {
+                @Suppress("DEPRECATION")
+                Geocoder(c).getFromLocation(loc.latitude, loc.longitude, 1)?.firstOrNull()
+                    ?.let { it.locality ?: it.subAdminArea ?: it.adminArea }
+            }.getOrNull()
+        } ?: "Current location"
+        return Place(name, loc.latitude, loc.longitude)
+    }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun fresh(c: Context, lm: LocationManager, provider: String?): Location? {
+        provider ?: return null
+        return withTimeoutOrNull(10_000L) {
+            suspendCancellableCoroutine { cont ->
+                val signal = CancellationSignal()
+                cont.invokeOnCancellation { signal.cancel() }
+                try {
+                    lm.getCurrentLocation(provider, signal, c.mainExecutor) { cont.resume(it) }
+                } catch (e: Exception) {
+                    cont.resume(null)
+                }
+            }
+        }
+    }
+
+    /** In location mode, moves the saved place along with the phone. */
+    suspend fun updateLocation(c: Context): Boolean {
+        if (!auto(c)) return false
+        val here = locate(c) ?: return false
+        val old = place(c)
+        val moved = old == null || kotlin.math.abs(old.lat - here.lat) > 0.03 || kotlin.math.abs(old.lon - here.lon) > 0.03
+        if (moved) setPlace(c, here)
+        return moved
     }
 
     fun fahrenheit(c: Context) = prefs(c).getBoolean("fahrenheit", false)
@@ -94,6 +163,7 @@ object Weather {
 
     /** Fetches the forecast if the cached one is older than [maxAgeMs]. */
     suspend fun refresh(c: Context, maxAgeMs: Long = 30 * 60_000L) {
+        updateLocation(c)
         val place = place(c) ?: return
         cached(c)?.let { if (System.currentTimeMillis() - it.fetchedAt < maxAgeMs) return }
         val unit = if (fahrenheit(c)) "fahrenheit" else "celsius"
@@ -211,7 +281,7 @@ object WeatherWidget : Kind(
         v.setTextViewText(
             R.id.wx_place,
             when {
-                place == null -> "Set a location in the app"
+                place == null -> if (Weather.auto(context)) "Finding you…" else "Set a location in the app"
                 now == null -> place.name.substringBefore(",")
                 else -> place.name.substringBefore(",")
             },

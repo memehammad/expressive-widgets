@@ -48,6 +48,7 @@ import dev.memehammad.widgets.ui.SwitchRow
 import dev.memehammad.widgets.widgets.AgendaWidget
 import dev.memehammad.widgets.widgets.Weather
 import dev.memehammad.widgets.widgets.WeatherWidget
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 /** Catalogue of widgets with an "Add" button each, plus Shizuku status. */
@@ -62,12 +63,41 @@ class MainActivity : ComponentActivity() {
     }
 
     private val calendar = mutableStateOf(false)
+    private val weatherPlace = mutableStateOf<Weather.Place?>(null)
+    private val weatherAuto = mutableStateOf(false)
+    private val bgLocation = mutableStateOf(false)
+
+    private fun syncWeather() {
+        weatherPlace.value = Weather.place(this)
+        weatherAuto.value = Weather.auto(this)
+        bgLocation.value = Weather.backgroundAllowed(this)
+    }
+
+    private fun refreshWeather() {
+        lifecycleScope.launch {
+            Weather.refresh(this@MainActivity, maxAgeMs = 0)
+            syncWeather()
+            Widgets.update(this@MainActivity, WeatherWidget)
+        }
+    }
+
+    private fun useLocation() {
+        if (Weather.locationAllowed(this)) {
+            Weather.setAuto(this, true)
+            syncWeather()
+            refreshWeather()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 3)
+        }
+    }
 
     @Deprecated("Activity callback")
     @Suppress("DEPRECATION")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         calendar.value = AgendaWidget.allowed(this)
+        if (requestCode == 3 && Weather.locationAllowed(this)) useLocation()
+        syncWeather()
         Widgets.updateAll(this)
     }
 
@@ -75,6 +105,10 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         shizuku.value = Shell.running() to Shell.granted()
         calendar.value = AgendaWidget.allowed(this)
+        syncWeather()
+        if (Weather.auto(this)) refreshWeather()
+        if (requestCode == 3 && Weather.locationAllowed(this)) useLocation()
+        syncWeather()
         Widgets.updateAll(this)
     }
 
@@ -211,24 +245,25 @@ class MainActivity : ComponentActivity() {
     private fun WeatherCard() {
         val scheme = MaterialTheme.colorScheme
         val scope = rememberCoroutineScope()
-        var place by remember { mutableStateOf(Weather.place(this)) }
+        val place = weatherPlace.value
+        val auto = weatherAuto.value
         var fahrenheit by remember { mutableStateOf(Weather.fahrenheit(this)) }
         var query by remember { mutableStateOf("") }
         var results by remember { mutableStateOf<List<Weather.Place>>(emptyList()) }
         var searching by remember { mutableStateOf(false) }
-        fun refresh() = scope.launch {
-            Weather.refresh(this@MainActivity, maxAgeMs = 0)
-            Widgets.update(this@MainActivity, WeatherWidget)
-        }
+        fun refresh() = refreshWeather()
         Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(vertical = 12.dp)) {
                 Text(
-                    place?.name ?: "No location set",
+                    when {
+                        auto -> "Current location" + (place?.let { " · ${it.name.substringBefore(",")}" } ?: "")
+                        else -> place?.name ?: "No location set"
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(horizontal = 20.dp),
                 )
                 Text(
-                    "Search for your city. Forecasts from Open-Meteo, no account needed.",
+                    "Use your location or search for a city. Forecasts from Open-Meteo, no account needed.",
                     style = MaterialTheme.typography.bodySmall,
                     color = scheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 20.dp),
@@ -258,13 +293,31 @@ class MainActivity : ComponentActivity() {
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 )
+                SwitchRow("Use my location", "Follows you; rough location is enough", auto) {
+                    if (it) useLocation() else {
+                        Weather.setAuto(this@MainActivity, false)
+                        syncWeather()
+                    }
+                }
+                if (auto && !bgLocation.value) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "To update while the app is closed, set location to \"Allow all the time\".",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = scheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f),
+                        )
+                        TextButton(onClick = { requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 4) }) { Text("Allow") }
+                    }
+                }
                 for (r in results) {
                     Text(
                         r.name,
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.fillMaxWidth().clickable {
+                            Weather.setAuto(this@MainActivity, false)
                             Weather.setPlace(this@MainActivity, r)
-                            place = r
+                            syncWeather()
                             results = emptyList()
                             query = ""
                             refresh()

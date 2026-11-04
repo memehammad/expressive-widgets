@@ -17,6 +17,7 @@ import android.util.SizeF
 import android.widget.RemoteViews
 import dev.memehammad.widgets.BaseProvider
 import dev.memehammad.widgets.Blob
+import dev.memehammad.widgets.Sizes
 import dev.memehammad.widgets.Role
 import dev.memehammad.widgets.blob
 import dev.memehammad.widgets.Cfg
@@ -120,11 +121,10 @@ object TogglesWidget : Kind(
         intArrayOf(R.id.t3, R.id.ts3, R.id.ti3, R.id.tl3),
     )
 
-    override fun render(context: Context, widgetId: Int, cfg: Cfg): RemoteViews {
-        val row = build(context, widgetId, cfg, R.layout.widget_toggles)
-        val grid = build(context, widgetId, cfg, R.layout.widget_toggles_grid)
-        return RemoteViews(mapOf(SizeF(40f, 40f) to row, SizeF(110f, 150f) to grid))
-    }
+    override fun render(context: Context, widgetId: Int, cfg: Cfg): RemoteViews =
+        Sizes.sized(context, widgetId) { w, h ->
+            build(context, widgetId, cfg, if (w >= 110f && h >= 150f) R.layout.widget_toggles_grid else R.layout.widget_toggles)
+        }
 
     private fun build(context: Context, widgetId: Int, cfg: Cfg, layout: Int): RemoteViews {
         val v = RemoteViews(context.packageName, layout)

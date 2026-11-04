@@ -13,8 +13,13 @@ import kotlin.math.min
  * landscape); we lay shapes and text out in dp for each, so text always sits inside its shape.
  */
 object Sizes {
+    /** Set while drawing the in-app preview, so exactly one layout is built at this size. */
+    @Volatile
+    var forced: SizeF? = null
+
     @Suppress("DEPRECATION")
     fun of(context: Context, widgetId: Int): List<SizeF> {
+        forced?.let { return listOf(it) }
         val o: Bundle = AppWidgetManager.getInstance(context).getAppWidgetOptions(widgetId) ?: Bundle()
         val list = o.getParcelableArrayList<SizeF>(AppWidgetManager.OPTION_APPWIDGET_SIZES)
             ?.filter { it.width > 0 && it.height > 0 }?.distinct()

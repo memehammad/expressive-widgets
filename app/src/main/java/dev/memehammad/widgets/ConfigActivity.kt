@@ -6,7 +6,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import android.widget.FrameLayout
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.key
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,8 +83,10 @@ class ConfigActivity : ComponentActivity() {
                 }
 
                 Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxSize()) {
+                  Column(Modifier.systemBarsPadding()) {
+                    Preview(kind, widgetId, cfg)
                     LazyColumn(
-                        Modifier.systemBarsPadding(),
+                        Modifier.weight(1f),
                         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 32.dp),
                     ) {
                         item {
@@ -103,6 +119,7 @@ class ConfigActivity : ComponentActivity() {
                                     SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id != "agenda")) { set("animate", it) }
                                 }
                                 SwitchRow("Card background", "A rounded background behind the widget", cfg.card) { set("card", it) }
+                                if (cfg.card) Choice(cardColors, cfg.cardColor) { set("cardColor", it) }
                             }
                         }
 
@@ -116,8 +133,44 @@ class ConfigActivity : ComponentActivity() {
                             ) { Text("Done") }
                         }
                     }
+                  }
                 }
             }
+        }
+    }
+
+    /** The real widget, drawn live at its home-screen size on a colourful backdrop. */
+    @Composable
+    private fun Preview(kind: Kind, widgetId: Int, cfg: Cfg) {
+        val scheme = MaterialTheme.colorScheme
+        val size = remember { Sizes.of(this, widgetId).first() }
+        BoxWithConstraints(
+            Modifier.fillMaxWidth().height(230.dp).padding(horizontal = 16.dp, vertical = 8.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(Brush.linearGradient(listOf(scheme.primaryContainer, scheme.tertiaryContainer, scheme.secondaryContainer))),
+            contentAlignment = Alignment.Center,
+        ) {
+            val scale = minOf(1f, (maxWidth.value - 24f) / size.width, (maxHeight.value - 24f) / size.height)
+            key(cfg.json.toString()) {
+                AndroidView(
+                    factory = { ctx ->
+                        FrameLayout(ctx).also { frame ->
+                            Sizes.forced = size
+                            val rv = try {
+                                kind.render(ctx, widgetId, cfg)
+                            } catch (e: Exception) {
+                                null
+                            } finally {
+                                Sizes.forced = null
+                            }
+                            rv?.let { frame.addView(runCatching { it.apply(ctx, frame) }.getOrNull() ?: return@let) }
+                        }
+                    },
+                    modifier = Modifier.requiredSize(size.width.dp, size.height.dp).graphicsLayer(scaleX = scale, scaleY = scale),
+                )
+            }
+            // Swallow taps so the preview doesn't open apps or flip toggles.
+            Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { } })
         }
     }
 
