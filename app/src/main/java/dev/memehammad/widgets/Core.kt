@@ -83,26 +83,40 @@ object Configs {
 
 /** RemoteViews helpers (dynamic colour resources, so widgets follow wallpaper changes). */
 /**
- * Applies a colour: a colour resource, or one of the Home screen tones (negative codes, see
- * [Palette]) which differ between light and dark mode.
+ * Colours are resolved here, in the app, to fixed light- and dark-mode values. Passing colour
+ * resources would let the launcher swap them for colours taken from the wallpaper behind the
+ * widget (Pixel Launcher does this), so widgets wouldn't show the colours picked in settings.
  */
-fun RemoteViews.colorList(id: Int, method: String, color: Int) {
-    if (color >= 0) setColorStateList(id, method, color)
-    else {
-        val (day, night) = Palette.special(color)
-        setColorStateList(id, method, day, night)
+object Colors {
+    private fun modeContext(c: android.content.Context, night: Boolean): android.content.Context {
+        val cfg = android.content.res.Configuration(c.resources.configuration)
+        cfg.uiMode = (cfg.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK.inv()) or
+            if (night) android.content.res.Configuration.UI_MODE_NIGHT_YES else android.content.res.Configuration.UI_MODE_NIGHT_NO
+        return c.createConfigurationContext(cfg)
     }
+
+    /** Light- and dark-mode colours for a colour resource or a Palette code. */
+    fun pair(code: Int): Pair<android.content.res.ColorStateList, android.content.res.ColorStateList> {
+        if (code < 0) return Palette.special(code)
+        val c = Palette.app ?: error("Palette.app not set")
+        return modeContext(c, false).getColorStateList(code) to modeContext(c, true).getColorStateList(code)
+    }
+
+    fun int(code: Int, night: Boolean): Int = pair(code).let { if (night) it.second else it.first }.defaultColor
+}
+
+fun RemoteViews.colorList(id: Int, method: String, color: Int) {
+    val (day, night) = Colors.pair(color)
+    setColorStateList(id, method, day, night)
 }
 
 fun RemoteViews.tint(id: Int, color: Int) = colorList(id, "setImageTintList", color)
 
 fun RemoteViews.textColor(id: Int, color: Int) {
-    if (color >= 0) setColor(id, "setTextColor", color)
-    else {
-        val (day, night) = Palette.special(color)
-        setColorInt(id, "setTextColor", day.defaultColor, night.defaultColor)
-    }
+    val (day, night) = Colors.pair(color)
+    setColorInt(id, "setTextColor", day.defaultColor, night.defaultColor)
 }
+
 fun RemoteViews.show(id: Int, visible: Boolean) = setViewVisibility(id, if (visible) android.view.View.VISIBLE else android.view.View.GONE)
 
 /** Text drawn straight on a widget (not inside a shape): ids per widget layout. */

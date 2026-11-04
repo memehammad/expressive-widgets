@@ -12,6 +12,9 @@ The newest section is used as the release notes on GitHub (and shown in Obtainiu
 - **Home screen colour:** a colour choice for the shapes themselves that matches your themed
   app icons. Pick the backdrop and symbol tones (light and dark mode) once in the app; any
   widget set to "Home screen" uses them, for shapes and optionally the card.
+- **Colours you pick now show up:** Pixel Launcher was replacing widget colours with colours
+  from the wallpaper behind each widget. Colours are now fixed values, so shapes match the
+  settings, the preview and your icons. Colour options show their actual colours.
 - **Custom colour:** pick any wallpaper tone for a widget's shapes (light and dark mode); text
   colour is chosen for contrast automatically.
 - **Better contrast:** numbers in liquid shapes move off the waterline instead of sitting half on

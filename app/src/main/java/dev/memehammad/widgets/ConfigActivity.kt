@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.key
 import androidx.compose.ui.draw.clip
@@ -84,8 +85,7 @@ class ConfigActivity : ComponentActivity() {
                 // The widget's shape colour, for the shape picker.
                 val fill = cfg.paint().fill.let { code ->
                     androidx.compose.ui.graphics.Color(
-                        if (code >= 0) getColor(code)
-                        else Palette.special(code).let { if (dark) it.second else it.first }.defaultColor,
+                        Colors.int(code, dark),
                     )
                 }
                 fun set(k: String, v: Any) {
@@ -124,10 +124,10 @@ class ConfigActivity : ComponentActivity() {
                             }
                         }
 
-                        item { Label("Colour") }
+                        item { Label("Shape colour") }
                         item {
                             Group {
-                                Choice(Role.entries.map { it to it.label }, cfg.role) { set("role", it.id) }
+                                RoleChoice(cfg.role, cfg.bold, cfg) { set("role", it.id) }
                                 if (cfg.role == Role.CUSTOM) {
                                     val (day, night) = cfg.customFill
                                     CustomColourPicker(day, night) { dark, spec -> set(if (dark) "cfill_d" else "cfill_l", spec) }
@@ -138,7 +138,7 @@ class ConfigActivity : ComponentActivity() {
                                         set("homeRev", System.currentTimeMillis())
                                     }
                                 }
-                                Choice(listOf("tonal" to "Soft", "bold" to "Bold"), cfg.str("fill", "tonal")) { set("fill", it) }
+                                Choice(listOf("tonal" to "Soft (pale shape)", "bold" to "Bold (strong shape)"), cfg.str("fill", "tonal")) { set("fill", it) }
                                 if (kind.id in listOf("clock", "weather", "toggles", "agenda", "activity")) {
                                     SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id !in listOf("agenda", "activity"))) { set("animate", it) }
                                 }
@@ -220,6 +220,34 @@ class ConfigActivity : ComponentActivity() {
         }
     }
 
+    /** Colour options shown as what they look like: the shape colour with a dot of the text colour. */
+    @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+    @Composable
+    private fun RoleChoice(selected: Role, bold: Boolean, cfg: Cfg, onPick: (Role) -> Unit) {
+        val dark = androidx.compose.foundation.isSystemInDarkTheme()
+        androidx.compose.foundation.layout.FlowRow(
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        ) {
+            for (r in Role.entries) {
+                val p = cfg.paint(r, bold)
+                val fill = androidx.compose.ui.graphics.Color(runCatching { Colors.int(p.fill, dark) }.getOrDefault(0xFF888888.toInt()))
+                val on = androidx.compose.ui.graphics.Color(runCatching { Colors.int(p.on, dark) }.getOrDefault(0xFF000000.toInt()))
+                androidx.compose.material3.FilterChip(
+                    selected = r == selected,
+                    onClick = { onPick(r) },
+                    shape = CircleShape,
+                    leadingIcon = {
+                        Box(Modifier.size(20.dp).background(fill, CircleShape), contentAlignment = Alignment.Center) {
+                            Box(Modifier.size(8.dp).background(on, CircleShape))
+                        }
+                    },
+                    label = { Text(r.label) },
+                )
+            }
+        }
+    }
+
     @Composable
     private fun KindOptions(kind: Kind, cfg: Cfg, set: (String, Any) -> Unit) {
         when (kind.id) {
@@ -234,7 +262,7 @@ class ConfigActivity : ComponentActivity() {
                 Label(if (style == "duo" || style == "trio") "Minutes shape and colour" else "Accent colour")
                 Group {
                     if (style == "duo" || style == "trio") ShapePicker(cfg.str("shape2", "clover4")) { set("shape2", it) }
-                    Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) }
+                    RoleChoice(Role.byId(cfg.str("role2", "tertiary")), true, cfg) { set("role2", it.id) }
                 }
                 if (style == "trio") {
                     Label("Date shape")
@@ -266,7 +294,7 @@ class ConfigActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
                     )
-                    Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) }
+                    RoleChoice(Role.byId(cfg.str("role2", "tertiary")), true, cfg) { set("role2", it.id) }
                     ShizukuRow(text = "Battery health needs Shizuku; watts, temperature and cycles work without it.")
                 }
             }
@@ -277,7 +305,7 @@ class ConfigActivity : ComponentActivity() {
                     SwitchRow("Week", "Bars for the last 7 days on big sizes", cfg.bool("week", true)) { set("week", it) }
                 }
                 Label("Goal colour")
-                Group { Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) } }
+                Group { RoleChoice(Role.byId(cfg.str("role2", "tertiary")), true, cfg) { set("role2", it.id) } }
             }
             "world" -> {
                 Label("Cities (up to 3)")
