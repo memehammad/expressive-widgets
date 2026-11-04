@@ -254,7 +254,7 @@ object WeatherWidget : Kind(
 
     private fun build(context: Context, widgetId: Int, cfg: Cfg, layout: Int, d: Float): RemoteViews {
         val v = RemoteViews(context.packageName, layout)
-        v.card(cfg)
+        v.card(context, cfg)
         val now = Weather.cached(context)
         val place = Weather.place(context)
         val p = cfg.paint()

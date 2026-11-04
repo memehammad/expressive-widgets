@@ -73,7 +73,7 @@ object WorldClockWidget : Kind(
 
     override fun render(context: Context, widgetId: Int, cfg: Cfg): RemoteViews {
         val v = RemoteViews(context.packageName, R.layout.widget_world)
-        v.card(cfg)
+        v.card(context, cfg)
         val chosen = cfg.list("cities", listOf("London", "New York", "Tokyo"))
             .mapNotNull { name -> cities.firstOrNull { it.first == name } }
         val roles = listOf(cfg.role, Role.entries[(cfg.role.ordinal + 1) % 3], Role.entries[(cfg.role.ordinal + 2) % 3])

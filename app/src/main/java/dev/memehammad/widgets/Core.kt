@@ -48,7 +48,7 @@ class Cfg(val json: JSONObject = JSONObject()) {
 }
 
 val cardColors = listOf(
-    "icons" to "Match app icons", "surface" to "Neutral",
+    "icons" to "Home screen", "surface" to "Neutral",
     "primary" to "Primary", "secondary" to "Secondary", "tertiary" to "Tertiary",
 )
 
@@ -72,15 +72,12 @@ fun RemoteViews.tint(id: Int, color: Int) = setColorStateList(id, "setImageTintL
 fun RemoteViews.textColor(id: Int, color: Int) = setColor(id, "setTextColor", color)
 fun RemoteViews.show(id: Int, visible: Boolean) = setViewVisibility(id, if (visible) android.view.View.VISIBLE else android.view.View.GONE)
 
-/** Applies the optional card background behind a widget. */
-fun RemoteViews.card(cfg: Cfg) {
-    val bg = when (cfg.cardColor) {
-        "surface" -> R.drawable.w_bg
-        "primary" -> R.drawable.w_bg_primary
-        "secondary" -> R.drawable.w_bg_secondary
-        "tertiary" -> R.drawable.w_bg_tertiary
-        else -> R.drawable.w_bg_icons
+/** Shows the optional card behind a widget, in its light- and dark-mode colours. */
+fun RemoteViews.card(c: android.content.Context, cfg: Cfg) {
+    setInt(android.R.id.background, "setBackgroundResource", 0)
+    show(R.id.w_card, cfg.card)
+    if (cfg.card) {
+        val (day, night) = Palette.card(c, cfg.cardColor)
+        setColorStateList(R.id.w_card, "setImageTintList", Palette.color(c, day), Palette.color(c, night))
     }
-    if (cfg.card) setInt(android.R.id.background, "setBackgroundResource", bg)
-    else setInt(android.R.id.background, "setBackgroundResource", 0)
 }

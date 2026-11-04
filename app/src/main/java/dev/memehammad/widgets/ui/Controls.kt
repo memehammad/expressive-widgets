@@ -2,6 +2,8 @@ package dev.memehammad.widgets.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -162,5 +164,55 @@ fun ShapeIcon(shape: Int, icon: Int, fill: Color, tint: Color, size: Int = 48) {
     Box(Modifier.size(size.dp), contentAlignment = Alignment.Center) {
         Image(painterResource(shape), contentDescription = null, colorFilter = ColorFilter.tint(fill), modifier = Modifier.size(size.dp))
         Image(painterResource(icon), contentDescription = null, colorFilter = ColorFilter.tint(tint), modifier = Modifier.size((size * 0.46f).dp))
+    }
+}
+
+/**
+ * Picks the shared "Home screen" card colour: one wallpaper tone for light mode and one for
+ * dark mode, so cards can match the launcher's icon backgrounds exactly.
+ */
+@Composable
+fun HomeColourPicker(onChange: () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var home by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(dev.memehammad.widgets.Palette.home(context)) }
+    for ((dark, title) in listOf(false to "Light mode", true to "Dark mode")) {
+        val selected = if (dark) home.second else home.first
+        Text(
+            title,
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(start = 20.dp, top = 8.dp),
+        )
+        for ((fam, label) in dev.memehammad.widgets.Palette.families) {
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 20.dp, top = 4.dp),
+            )
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+            ) {
+                items(dev.memehammad.widgets.Palette.tones) { tone ->
+                    val spec = "$fam:$tone"
+                    val color = Color(context.getColor(dev.memehammad.widgets.Palette.res(spec)))
+                    val sel = spec == selected
+                    androidx.compose.foundation.layout.Box(
+                        Modifier.size(34.dp)
+                            .background(color, if (sel) RoundedCornerShape(10.dp) else CircleShape)
+                            .then(
+                                if (sel) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                            )
+                            .clickable {
+                                if (dark) dev.memehammad.widgets.Palette.setHome(context, dark = spec)
+                                else dev.memehammad.widgets.Palette.setHome(context, light = spec)
+                                home = dev.memehammad.widgets.Palette.home(context)
+                                onChange()
+                            },
+                    )
+                }
+            }
+        }
     }
 }

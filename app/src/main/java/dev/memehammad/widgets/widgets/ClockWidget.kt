@@ -49,7 +49,7 @@ object ClockWidget : Kind(
 
     private fun build(c: Context, widgetId: Int, cfg: Cfg, w: Float, h: Float): RemoteViews {
         val v = RemoteViews(c.packageName, R.layout.widget_clock)
-        v.card(cfg)
+        v.card(c, cfg)
         v.size(R.id.c_stage, w, h)
         val style = cfg.str("style", cfg.str("layout", "duo"))
         val pad = if (cfg.card) 10f else 4f

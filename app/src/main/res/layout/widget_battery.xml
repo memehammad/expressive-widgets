@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:clipToOutline="true">
 
+    <!-- Card background (colour set in code, day and night separately). -->
+    <ImageView
+        android:id="@+id/w_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/w_card"
+        android:tint="@color/card_icons"
+        android:visibility="gone" />
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <FrameLayout
         android:id="@+id/b_stage"
         android:layout_width="match_parent"
@@ -115,4 +129,5 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </FrameLayout>
+</FrameLayout>
 </FrameLayout>

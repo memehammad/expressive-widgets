@@ -45,11 +45,13 @@ import androidx.compose.ui.unit.dp
 import dev.memehammad.widgets.ui.AppTheme
 import dev.memehammad.widgets.ui.Choice
 import dev.memehammad.widgets.ui.Group
+import dev.memehammad.widgets.ui.HomeColourPicker
 import dev.memehammad.widgets.ui.Label
 import dev.memehammad.widgets.ui.Picks
 import dev.memehammad.widgets.ui.ShapePicker
 import dev.memehammad.widgets.ui.SwitchRow
 import dev.memehammad.widgets.widgets.ClockWidget
+import dev.memehammad.widgets.widgets.StepsWidget
 import dev.memehammad.widgets.widgets.TogglesWidget
 import dev.memehammad.widgets.widgets.WorldClockWidget
 
@@ -105,6 +107,8 @@ class ConfigActivity : ComponentActivity() {
                                 when (kind.id) {
                                     "battery" -> ShapePicker(cfg.shape.id, only = Liquid.shapes) { set("shape", it) }
                                     "weather" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Weather") { set("shape", it) }
+                                    "steps" -> ShapePicker(cfg.shape.id, only = Liquid.shapes) { set("shape", it) }
+                                    "activity" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Sport") { set("shape", it) }
                                     else -> ShapePicker(cfg.shape.id) { set("shape", it) }
                                 }
                             }
@@ -115,11 +119,32 @@ class ConfigActivity : ComponentActivity() {
                             Group {
                                 Choice(Role.entries.map { it to it.label }, cfg.role) { set("role", it.id) }
                                 Choice(listOf("tonal" to "Soft", "bold" to "Bold"), cfg.str("fill", "tonal")) { set("fill", it) }
-                                if (kind.id in listOf("clock", "weather", "toggles", "agenda")) {
-                                    SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id != "agenda")) { set("animate", it) }
+                                if (kind.id in listOf("clock", "weather", "toggles", "agenda", "activity")) {
+                                    SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id !in listOf("agenda", "activity"))) { set("animate", it) }
                                 }
-                                SwitchRow("Card background", "A rounded background behind the widget", cfg.card) { set("card", it) }
-                                if (cfg.card) Choice(cardColors, cfg.cardColor) { set("cardColor", it) }
+                            }
+                        }
+                        item { Label("Background") }
+                        item {
+                            Group {
+                                Choice(listOf("off" to "None") + cardColors, if (cfg.card) cfg.cardColor else "off") {
+                                    if (it == "off") set("card", false) else {
+                                        set("cardColor", it)
+                                        set("card", true)
+                                    }
+                                }
+                                if (cfg.card && cfg.cardColor == "icons") {
+                                    Text(
+                                        "Home screen colour is shared by all widgets. Pick the tone that matches your icons:",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                                    )
+                                    HomeColourPicker {
+                                        Widgets.updateAll(this@ConfigActivity)
+                                        set("homeRev", System.currentTimeMillis())
+                                    }
+                                }
                             }
                         }
 
@@ -203,6 +228,15 @@ class ConfigActivity : ComponentActivity() {
                     Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) }
                     ShizukuRow(text = "Battery health needs Shizuku; watts, temperature and cycles work without it.")
                 }
+            }
+            "steps" -> {
+                Label("Daily goal")
+                Group {
+                    Choice(StepsWidget.goals.map { it to "%,d".format(it) }, cfg.int("goal", 8000)) { set("goal", it) }
+                    SwitchRow("Week", "Bars for the last 7 days on big sizes", cfg.bool("week", true)) { set("week", it) }
+                }
+                Label("Goal colour")
+                Group { Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) } }
             }
             "world" -> {
                 Label("Cities (up to 3)")

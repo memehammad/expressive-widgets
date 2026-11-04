@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Agenda: date in a shape and the upcoming events. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/w_bg"
-    android:clipToOutline="true"
+    android:clipToOutline="true">
+
+    <!-- Card background (colour set in code, day and night separately). -->
+    <ImageView
+        android:id="@+id/w_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/w_card"
+        android:tint="@color/card_icons"
+        android:visibility="visible" />
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="12dp">
     <LinearLayout
@@ -117,3 +130,4 @@
             android:textSize="13sp" />
     </FrameLayout>
 </LinearLayout>
+</FrameLayout>

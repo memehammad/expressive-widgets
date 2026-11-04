@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import dev.memehammad.widgets.ui.AppTheme
+import dev.memehammad.widgets.ui.HomeColourPicker
 import dev.memehammad.widgets.ui.Label
 import dev.memehammad.widgets.ui.ShapeIcon
 import dev.memehammad.widgets.ui.SwitchRow
@@ -49,6 +50,10 @@ import dev.memehammad.widgets.widgets.AgendaWidget
 import dev.memehammad.widgets.widgets.Weather
 import dev.memehammad.widgets.widgets.WeatherWidget
 import androidx.lifecycle.lifecycleScope
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
+import dev.memehammad.widgets.widgets.ActivityWidget
+import dev.memehammad.widgets.widgets.StepsWidget
 import kotlinx.coroutines.launch
 
 /** Catalogue of widgets with an "Add" button each, plus Shizuku status. */
@@ -63,6 +68,39 @@ class MainActivity : ComponentActivity() {
     }
 
     private val calendar = mutableStateOf(false)
+
+    /** Health Connect: "ok", "partial", "off" (not connected) or "missing". */
+    private val health = mutableStateOf("off")
+    private val healthLauncher =
+        registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { syncHealth(refresh = true) }
+
+    private fun syncHealth(refresh: Boolean = false) {
+        lifecycleScope.launch {
+            if (!Health.available(this@MainActivity)) {
+                health.value = "missing"
+                return@launch
+            }
+            val g = Health.granted(this@MainActivity)
+            health.value = when {
+                g.containsAll(Health.request(this@MainActivity)) -> "ok"
+                g.isNotEmpty() -> "partial"
+                else -> "off"
+            }
+            if (refresh || g.isNotEmpty()) {
+                Health.refresh(this@MainActivity, maxAgeMs = 0)
+                Widgets.update(this@MainActivity, StepsWidget)
+                Widgets.update(this@MainActivity, ActivityWidget)
+            }
+        }
+    }
+
+    private fun connectHealth() {
+        if (Health.status(this) == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.healthdata")))
+        } else {
+            healthLauncher.launch(Health.request(this))
+        }
+    }
     private val weatherPlace = mutableStateOf<Weather.Place?>(null)
     private val weatherAuto = mutableStateOf(false)
     private val bgLocation = mutableStateOf(false)
@@ -106,6 +144,7 @@ class MainActivity : ComponentActivity() {
         shizuku.value = Shell.running() to Shell.granted()
         calendar.value = AgendaWidget.allowed(this)
         syncWeather()
+        syncHealth()
         if (Weather.auto(this)) refreshWeather()
         Widgets.updateAll(this)
     }
@@ -171,6 +210,21 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                item { Label("Home screen colour") }
+                item {
+                    Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(vertical = 12.dp)) {
+                            Text(
+                                "Widget cards set to \"Home screen\" use this colour. Pick the tones that match your app icons.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = scheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                            )
+                            HomeColourPicker { Widgets.updateAll(this@MainActivity) }
+                        }
+                    }
+                }
+
                 item { Label("Weather") }
                 item { WeatherCard() }
                 item { Label("Calendar") }
@@ -186,6 +240,34 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             if (!calendar.value) TextButton(onClick = { requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR), 2) }) { Text("Allow") }
+                        }
+                    }
+                }
+
+                item { Label("Health") }
+                item {
+                    Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
+                        Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    when (health.value) {
+                                        "ok" -> "Health Connect connected"
+                                        "partial" -> "Health Connect partly allowed"
+                                        "missing" -> "Health Connect not available"
+                                        else -> "Health Connect not connected"
+                                    },
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(
+                                    "Steps and workouts for the Steps and Workout widgets. Strava, Fitbit, Samsung Health and " +
+                                        "Google Fit can share into Health Connect (turn it on in their settings).",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = scheme.onSurfaceVariant,
+                                )
+                            }
+                            if (health.value != "ok" && health.value != "missing") {
+                                TextButton(onClick = { connectHealth() }) { Text("Connect") }
+                            }
                         }
                     }
                 }

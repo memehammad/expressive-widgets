@@ -10,9 +10,22 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <!-- Agenda widget. -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
+    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
 
     <!-- Apps we open: Shizuku (setup). -->
     <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+        <package android:name="com.google.android.apps.fitness" />
+        <package android:name="com.fitbit.FitbitMobile" />
+        <package android:name="com.sec.android.app.shealth" />
+        <package android:name="com.strava" />
+        <intent>
+            <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+        </intent>
         <package android:name="com.google.android.apps.weather" />
         <package android:name="com.samsung.android.weather" />
         <package android:name="com.sec.android.daemonapp" />
@@ -61,6 +74,51 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <!-- Health Connect: privacy rationale (Android 13-) and permission usage (Android 14+). -->
+        <activity
+            android:name=".PrivacyActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Widgets">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
+            android:targetActivity=".PrivacyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+
+        <receiver
+            android:name=".widgets.StepsProvider"
+            android:exported="true"
+            android:label="@string/w_steps">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_steps" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.ActivityProvider"
+            android:exported="true"
+            android:label="@string/w_activity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_activity" />
+        </receiver>
 
         <receiver
             android:name=".widgets.ClockProvider"

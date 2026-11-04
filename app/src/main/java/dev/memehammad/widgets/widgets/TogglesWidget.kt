@@ -128,7 +128,7 @@ object TogglesWidget : Kind(
 
     private fun build(context: Context, widgetId: Int, cfg: Cfg, layout: Int): RemoteViews {
         val v = RemoteViews(context.packageName, layout)
-        v.card(cfg)
+        v.card(context, cfg)
         val chosen = cfg.list("toggles", listOf("wifi", "data", "bluetooth", "flashlight")).mapNotNull { Toggle.byId(it) }.take(4)
         val shell = Shell.granted()
         val onShape = cfg.shape

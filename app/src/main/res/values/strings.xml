@@ -14,4 +14,9 @@
     <string name="w_weather_desc">Weather in a shape that matches it</string>
     <string name="w_agenda">Agenda</string>
     <string name="w_agenda_desc">Today\'s date and your next events</string>
+    <string name="w_steps">Steps</string>
+    <string name="w_steps_desc">Steps today filling a shape, with your week</string>
+    <string name="w_activity">Workout</string>
+    <string name="w_activity_desc">Your latest workout from Health Connect (Strava, Fit, …)</string>
+    <string name="health_rationale">Expressive Widgets reads your steps, distance, active calories and workouts from Health Connect only to show them in its widgets. Nothing is stored anywhere else or sent off your phone.</string>
 </resources>

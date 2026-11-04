@@ -100,7 +100,7 @@ object BatteryWidget : Kind(
 
     private fun build(context: Context, widgetId: Int, cfg: Cfg, info: Info, w: Float, h: Float): RemoteViews {
         val v = RemoteViews(context.packageName, R.layout.widget_battery)
-        v.card(cfg)
+        v.card(context, cfg)
         v.size(R.id.b_stage, w, h)
         val pad = if (cfg.card) 10f else 4f
         val wide = w >= 180f && w > h * 1.6f

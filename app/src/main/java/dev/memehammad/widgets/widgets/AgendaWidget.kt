@@ -110,7 +110,7 @@ object AgendaWidget : Kind(
         context: Context, widgetId: Int, cfg: Cfg, layout: Int, events: List<Event>, d: Float, small: Boolean,
     ): RemoteViews {
         val v = RemoteViews(context.packageName, layout)
-        v.card(cfg)
+        v.card(context, cfg)
         val p = cfg.paint()
         val now = System.currentTimeMillis()
         val spin = cfg.bool("animate", false)
