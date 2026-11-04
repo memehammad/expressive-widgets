@@ -107,8 +107,6 @@ class MainActivity : ComponentActivity() {
         calendar.value = AgendaWidget.allowed(this)
         syncWeather()
         if (Weather.auto(this)) refreshWeather()
-        if (requestCode == 3 && Weather.locationAllowed(this)) useLocation()
-        syncWeather()
         Widgets.updateAll(this)
     }
 
