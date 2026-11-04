@@ -46,6 +46,11 @@ class BadgeSpec(
     val badge: Pair<Int, Int>? = null,
     val badgePaint: Paint? = null,
     val tap: PendingIntent? = null,
+    /** An animated layout drawn over the shape (e.g. twinkling stars), in [overlayPaint]'s fill. */
+    val overlay: Int? = null,
+    val overlayPaint: Paint? = null,
+    /** Draw the icon big over the whole shape instead of inside its text box. */
+    val bigIcon: Boolean = false,
 )
 
 /** Lays a [BadgeSpec] out at an exact size: shape centred (or on the left with details when wide). */
@@ -74,6 +79,13 @@ object Badge {
             v.blob(R.id.g_blob, Blob.of(c, s.shape, s.paint.fill, s.spin))
         }
 
+        v.show(R.id.g_overlay, s.overlay != null)
+        if (s.overlay != null) {
+            val o = d * 1.12f
+            v.place(R.id.g_overlay, x - (o - d) / 2, y - (o - d) / 2, o, o)
+            v.blob(R.id.g_overlay, Blob.animated(c, s.overlay, (s.overlayPaint ?: s.paint).fill))
+        }
+
         val i = s.shape.inner(x, y, d, s.spin || s.animated != null)
         val hasNum = s.num != null || s.chronoEnd != null
         val numId = if (s.chronoEnd != null) R.id.g_chrono else R.id.g_num
@@ -84,6 +96,12 @@ object Badge {
 
         var on = s.paint.on
         when {
+            s.icon != null && s.bigIcon -> {
+                val sz = d * if (s.sub != null) 0.58f else 0.66f
+                val cy = y + d / 2 - if (s.sub != null) d * 0.06f else 0f
+                v.place(R.id.g_icon, x + (d - sz) / 2, cy - sz / 2, sz, sz)
+                if (s.sub != null) v.textAt(R.id.g_sub, x + d / 2, cy + sz / 2 + d * 0.08f, d, (d * 0.085f).coerceAtLeast(8f))
+            }
             s.icon != null && !hasNum && s.sub != null -> {
                 val sz = i.side * 0.74f
                 v.place(R.id.g_icon, i.cx - sz / 2, i.cy - i.side * 0.5f, sz, sz)

@@ -353,7 +353,12 @@ class ConfigActivity : ComponentActivity() {
             }
             "moon" -> {
                 Label("Moon")
-                Group { SwitchRow("Show how lit it is", null, cfg.bool("label", true)) { set("label", it) } }
+                Group {
+                    SwitchRow("Show how lit it is", null, cfg.bool("label", true)) { set("label", it) }
+                    SwitchRow("Twinkling stars", "Little sparkles around the moon", cfg.bool("stars", true)) { set("stars", it) }
+                }
+                Label("Star colour")
+                Group { RoleChoice(Role.byId(cfg.str("role2", "tertiary")), true, cfg) { set("role2", it.id) } }
             }
             "world" -> {
                 Label("Cities (up to 3)")

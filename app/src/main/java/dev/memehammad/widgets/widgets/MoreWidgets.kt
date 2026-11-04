@@ -175,7 +175,8 @@ object MoonWidget : Kind(
         else -> "Waning crescent"
     }
 
-    override fun defaults() = Cfg().with("shape", "cookie12").with("role", "neutral").with("fill", "bold").with("animate", false)
+    override fun defaults() = Cfg().with("shape", "cookie12").with("role", "primary").with("fill", "bold")
+        .with("animate", false).with("stars", true).with("role2", "tertiary")
 
     override fun render(context: Context, widgetId: Int, cfg: Cfg): RemoteViews {
         val p = phase()
@@ -193,8 +194,10 @@ object MoonWidget : Kind(
             Badge.build(
                 context, cfg, w, h,
                 BadgeSpec(
-                    cfg.shape, cfg.paint(), cfg.bool("animate", false), icon = frame,
+                    cfg.shape, cfg.paint(), cfg.bool("animate", false), icon = frame, iconTint = false, bigIcon = true,
                     sub = if (cfg.bool("label", true)) "$lit%" else null,
+                    overlay = if (cfg.bool("stars", true)) Morphs.stars else null,
+                    overlayPaint = cfg.paint(Role.byId(cfg.str("role2", "tertiary")), true),
                     title = name(p),
                     chips = listOf("$lit% lit", if (toFull in 1..29) "Full in $toFull d" else "Full moon", "New in $toNew d"),
                     tap = Widgets.configIntent(context, widgetId),

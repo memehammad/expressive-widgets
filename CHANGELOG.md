@@ -11,7 +11,8 @@ Six new widgets:
   it becomes a breathing sun.
 - **Focus timer:** tap to start (5–60 min); the shape turns and counts down, then celebrates.
 - **Progress:** how much of the year, month, week or day is done, as liquid in a shape.
-- **Moon:** tonight's phase drawn in a shape, how lit it is, and the next full and new moon.
+- **Moon:** a big cratered moon showing tonight's phase, with twinkling stars around its shape,
+  how lit it is, and the next full and new moon.
 - **Dice:** roll a die or a D20, flip a coin or ask yes / no / maybe. Every roll lands in a
   new shape and colour.
 

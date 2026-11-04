@@ -91,4 +91,5 @@ object Morphs {
     val sun = R.layout.ml_sun
     val charge = R.layout.ml_charge
     val pulse = R.layout.ml_pulse
+    val stars = R.layout.ml_stars
 }

@@ -256,6 +256,7 @@ def main():
         "    val sun = R.layout.ml_sun",
         "    val charge = R.layout.ml_charge",
         "    val pulse = R.layout.ml_pulse",
+        "    val stars = R.layout.ml_stars",
         "}", "",
     ]
     with open(KT, "w") as f:
@@ -265,3 +266,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # The moon frames and twinkling stars live in their own script (and share the mo_/ml_ names).
+    import subprocess, sys
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools", "gen_moon.py")], check=True)
