@@ -83,14 +83,15 @@ object StepsWidget : Kind(
         val goal = cfg.int("goal", 8000).coerceAtLeast(500)
         val pct = (steps * 100 / goal).toInt().coerceIn(0, 100)
         val done = steps >= goal
-        val big = w >= 200f && h >= 170f
-        val wide = !big && w >= 180f && w > h * 1.6f
+        val details = cfg.bool("details", false)
+        val big = w >= 200f && h >= 170f && (details || cfg.bool("week", true))
+        val wide = details && !big && w >= 180f && w > h * 1.6f
         val d = when {
             big -> min(h * 0.58f, w * 0.45f)
             wide -> h - 2 * pad
             else -> min(w, h) - 2 * pad
         }
-        val x = if (big || wide) pad + 2f else (w - d) / 2
+        val x = if ((big && details) || wide) pad + 2f else (w - d) / 2
         val y = if (big) pad + 2f else (h - d) / 2
         val shape = cfg.shape.takeIf { Liquid.supports(it.id) } ?: Shapes.byId("clover8")
         // Soft: pale shape with strong liquid. Bold: strong shape with pale liquid.
@@ -106,11 +107,13 @@ object StepsWidget : Kind(
         val i = shape.inner(x, y, d, false)
         val ts = min(fitDigits(i.side, 5.2f), d * 0.24f)
         v.setTextViewText(R.id.s_num, if (data == null) "–" else fmt(steps))
-        val (by, onLiquid) = floatOnLiquid(y, d, pct, i.cy + ts * 0.16f, ts * 0.8f)
-        val shift = by - (i.cy + ts * 0.16f)
+        val blockCy = if (details) i.cy + ts * 0.16f else i.cy
+        val (by, onLiquid) = floatOnLiquid(y, d, pct, blockCy, if (details) ts * 0.8f else ts * 0.45f)
+        val shift = by - blockCy
         val textOn = if (onLiquid) liquid.on else track.on
-        v.textAt(R.id.s_num, i.cx, i.cy - ts * 0.3f + shift, d, ts)
+        v.textAt(R.id.s_num, i.cx, if (details) i.cy - ts * 0.3f + shift else by, d, ts)
         v.textColor(R.id.s_num, textOn)
+        v.show(R.id.s_sub, details)
         v.setTextViewText(
             R.id.s_sub,
             when {
@@ -135,8 +138,8 @@ object StepsWidget : Kind(
             v.tint(R.id.s_badge_icon, role2.on)
         }
 
-        v.show(R.id.s_info, big || wide)
-        if (big || wide) {
+        v.show(R.id.s_info, details && (big || wide))
+        if (details && (big || wide)) {
             val ix = x + d + 14f
             v.place(R.id.s_info, ix, if (big) y else 0f, w - ix - pad, if (big) d else h)
             v.setTextViewText(R.id.s_title, if (data == null) "Steps" else "${fmt(steps)} steps")
@@ -210,7 +213,7 @@ object ActivityWidget : Kind(
         val shape = if (cfg.str("shape", "auto") == "auto") Shapes.byId(typeShape) else cfg.shape
         val spin = cfg.bool("animate", false)
         val p = cfg.paint()
-        val wide = w >= 180f && w > h * 1.5f
+        val wide = cfg.bool("details", false) && w >= 180f && w > h * 1.5f
         val d = if (wide) h - 2 * pad else min(w, h) - 2 * pad
         val x = if (wide) pad + 2f else (w - d) / 2
         val y = (h - d) / 2

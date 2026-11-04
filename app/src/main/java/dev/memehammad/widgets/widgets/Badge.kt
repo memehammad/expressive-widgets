@@ -55,12 +55,19 @@ class BadgeSpec(
 
 /** Lays a [BadgeSpec] out at an exact size: shape centred (or on the left with details when wide). */
 object Badge {
-    fun build(c: Context, cfg: Cfg, w: Float, h: Float, s: BadgeSpec): RemoteViews {
+    fun build(c: Context, cfg: Cfg, w: Float, h: Float, spec: BadgeSpec): RemoteViews {
+        // Without "Details", widgets show just the shape and its number: no labels, no side text.
+        val details = cfg.bool("details", false)
+        val s = if (details) spec else BadgeSpec(
+            spec.shape, spec.paint, spec.spin, spec.animated, spec.liquid, spec.track, spec.icon, spec.iconTint,
+            spec.num, spec.numChars, spec.chronoEnd, null, null, emptyList(), spec.badge, spec.badgePaint, spec.tap,
+            spec.overlay, spec.overlayPaint, spec.bigIcon,
+        )
         val v = RemoteViews(c.packageName, R.layout.widget_badge)
         v.card(c, cfg)
         v.size(R.id.g_stage, w, h)
         val pad = if (cfg.card) 10f else 4f
-        val wide = w >= 180f && w > h * 1.5f
+        val wide = details && w >= 180f && w > h * 1.5f
         val d = if (wide) h - 2 * pad else min(w, h) - 2 * pad
         val x = if (wide) pad + 2f else (w - d) / 2
         val y = (h - d) / 2

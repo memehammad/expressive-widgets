@@ -195,7 +195,7 @@ object MoonWidget : Kind(
                 context, cfg, w, h,
                 BadgeSpec(
                     cfg.shape, cfg.paint(), cfg.bool("animate", false), icon = frame, iconTint = false, bigIcon = true,
-                    sub = if (cfg.bool("label", true)) "$lit%" else null,
+                    sub = "$lit%",
                     overlay = if (cfg.bool("stars", true)) Morphs.stars else null,
                     overlayPaint = cfg.paint(Role.byId(cfg.str("role2", "tertiary")), true),
                     title = name(p),

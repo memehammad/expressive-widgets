@@ -4,6 +4,9 @@ The newest section is used as the release notes on GitHub (and shown in Obtainiu
 
 ## 0.4
 
+Widgets now show just the shape and its number. A **Details** switch brings back labels and the
+info next to the shape on wide sizes.
+
 Six new widgets:
 
 - **Next alarm:** your next alarm in a turning shape, with how long until it rings.

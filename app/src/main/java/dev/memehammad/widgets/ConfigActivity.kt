@@ -172,6 +172,16 @@ class ConfigActivity : ComponentActivity() {
                             }
                         }
 
+                        if (kind.id in listOf("steps", "activity", "battery", "alarm", "countdown", "timer", "progress", "moon", "dice")) {
+                            item {
+                                Group {
+                                    SwitchRow(
+                                        "Details", "Labels, and more info next to the shape on wide sizes",
+                                        cfg.bool("details", false),
+                                    ) { set("details", it) }
+                                }
+                            }
+                        }
                         item { KindOptions(kind, cfg, ::set) }
 
                         item {
@@ -354,7 +364,6 @@ class ConfigActivity : ComponentActivity() {
             "moon" -> {
                 Label("Moon")
                 Group {
-                    SwitchRow("Show how lit it is", null, cfg.bool("label", true)) { set("label", it) }
                     SwitchRow("Twinkling stars", "Little sparkles around the moon", cfg.bool("stars", true)) { set("stars", it) }
                 }
                 Label("Star colour")

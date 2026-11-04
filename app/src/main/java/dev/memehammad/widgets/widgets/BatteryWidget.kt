@@ -104,7 +104,7 @@ object BatteryWidget : Kind(
         v.card(context, cfg)
         v.size(R.id.b_stage, w, h)
         val pad = if (cfg.card) 10f else 4f
-        val wide = w >= 180f && w > h * 1.6f
+        val wide = cfg.bool("details", false) && w >= 180f && w > h * 1.6f
         val d = if (wide) h - 2 * pad else min(w, h) - 2 * pad
         val x = if (wide) pad + 4f else (w - d) / 2
         val y = (h - d) / 2
