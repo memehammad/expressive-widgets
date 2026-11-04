@@ -140,7 +140,7 @@ object TogglesWidget : Kind(
             val on = isOn(context, t)
             // On: the chosen shape, slowly turning, in a bold colour (each tile its own role if mixed).
             // Off: a calm static shape.
-            val role = if (cfg.bool("mixed", true)) Role.entries[(cfg.role.ordinal + i) % 3] else cfg.role
+            val role = if (cfg.bool("mixed", true) && i > 0) Role.entries[(cfg.role.ordinal + i) % 3] else cfg.role
             val p = cfg.paint(role, bold = true)
             v.blob(
                 shape,

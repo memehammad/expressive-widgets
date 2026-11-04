@@ -10,7 +10,10 @@ enum class Role(val id: String, val label: String, val container: Int, val onCon
     PRIMARY("primary", "Primary", R.color.primary_container, R.color.primary_on_container, R.color.primary_accent, R.color.primary_on_accent),
     SECONDARY("secondary", "Secondary", R.color.secondary_container, R.color.secondary_on_container, R.color.secondary_accent, R.color.secondary_on_accent),
     TERTIARY("tertiary", "Tertiary", R.color.tertiary_container, R.color.tertiary_on_container, R.color.tertiary_accent, R.color.tertiary_on_accent),
-    NEUTRAL("neutral", "Neutral", R.color.neutral_container, R.color.neutral_on_container, R.color.neutral_accent, R.color.neutral_on_accent);
+    NEUTRAL("neutral", "Neutral", R.color.neutral_container, R.color.neutral_on_container, R.color.neutral_accent, R.color.neutral_on_accent),
+
+    /** The tones behind and on your themed app icons (picked in the app); bold swaps them. */
+    ICONS("icons", "Home screen", Palette.ICON_BACK, Palette.ICON_SYMBOL, Palette.ICON_SYMBOL, Palette.ICON_BACK);
 
     companion object {
         fun byId(id: String?) = entries.firstOrNull { it.id == id } ?: PRIMARY
@@ -41,7 +44,7 @@ class Cfg(val json: JSONObject = JSONObject()) {
     val cardColor get() = str("cardColor", "icons")
 
     /** A soft shape would vanish on a card of the same colour, so it goes bold there. */
-    private fun clashes(r: Role) = card && (cardColor == r.id || (cardColor == "icons" && r == Role.PRIMARY))
+    private fun clashes(r: Role) = card && cardColor == r.id
 
     fun paint(role: Role = this.role, bold: Boolean = this.bold) =
         if (bold) Paint(role.accent, role.onAccent) else Paint(role.container, role.onContainer)
@@ -68,8 +71,27 @@ object Configs {
 }
 
 /** RemoteViews helpers (dynamic colour resources, so widgets follow wallpaper changes). */
-fun RemoteViews.tint(id: Int, color: Int) = setColorStateList(id, "setImageTintList", color)
-fun RemoteViews.textColor(id: Int, color: Int) = setColor(id, "setTextColor", color)
+/**
+ * Applies a colour: a colour resource, or one of the Home screen tones (negative codes, see
+ * [Palette]) which differ between light and dark mode.
+ */
+fun RemoteViews.colorList(id: Int, method: String, color: Int) {
+    if (color >= 0) setColorStateList(id, method, color)
+    else {
+        val (day, night) = Palette.special(color)
+        setColorStateList(id, method, day, night)
+    }
+}
+
+fun RemoteViews.tint(id: Int, color: Int) = colorList(id, "setImageTintList", color)
+
+fun RemoteViews.textColor(id: Int, color: Int) {
+    if (color >= 0) setColor(id, "setTextColor", color)
+    else {
+        val (day, night) = Palette.special(color)
+        setColorInt(id, "setTextColor", day.defaultColor, night.defaultColor)
+    }
+}
 fun RemoteViews.show(id: Int, visible: Boolean) = setViewVisibility(id, if (visible) android.view.View.VISIBLE else android.view.View.GONE)
 
 /** Shows the optional card behind a widget, in its light- and dark-mode colours. */

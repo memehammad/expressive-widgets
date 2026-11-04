@@ -170,50 +170,68 @@ fun ShapeIcon(shape: Int, icon: Int, fill: Color, tint: Color, size: Int = 48) {
 }
 
 /**
- * Picks the shared "Home screen" card colour: one wallpaper tone for light mode and one for
- * dark mode, so cards can match the launcher's icon backgrounds exactly.
+ * Picks the shared "Home screen" colours: the backdrop and symbol tones of your themed app
+ * icons, separately for light and dark mode. Used by the "Home screen" colour and background.
  */
 @Composable
 fun HomeColourPicker(onChange: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    var home by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(dev.memehammad.widgets.Palette.home(context)) }
-    for ((dark, title) in listOf(false to "Light mode", true to "Dark mode")) {
-        val selected = if (dark) home.second else home.first
+    val P = dev.memehammad.widgets.Palette
+    var rev by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    var part by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("back") }
+    val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+    var dark by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(systemDark) }
+    val home = androidx.compose.runtime.remember(rev) { P.home(context) }
+    val sym = androidx.compose.runtime.remember(rev) { P.symbol(context) }
+    fun col(spec: String) = Color(context.getColor(P.res(spec)))
+    val back = if (dark) home.second else home.first
+    val fore = if (dark) sym.second else sym.first
+
+    Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        // What it will look like: a shape in the backdrop tone with a symbol on it.
+        androidx.compose.foundation.layout.Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+            Image(painterResource(R.drawable.shp_cookie9), null, colorFilter = ColorFilter.tint(col(back)), modifier = Modifier.size(64.dp))
+            Image(painterResource(R.drawable.ic_clock), null, colorFilter = ColorFilter.tint(col(fore)), modifier = Modifier.size(28.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Choice(listOf("back" to "Backdrop", "symbol" to "Symbol"), part) { part = it }
+            Choice(listOf(false to "Light mode", true to "Dark mode"), dark) { dark = it }
+        }
+    }
+    val selected = if (part == "back") back else fore
+    for ((fam, label) in P.families) {
         Text(
-            title,
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(start = 20.dp, top = 8.dp),
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 20.dp, top = 4.dp),
         )
-        for ((fam, label) in dev.memehammad.widgets.Palette.families) {
-            Text(
-                label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-            ) {
-                items(dev.memehammad.widgets.Palette.tones) { tone ->
-                    val spec = "$fam:$tone"
-                    val color = Color(context.getColor(dev.memehammad.widgets.Palette.res(spec)))
-                    val sel = spec == selected
-                    androidx.compose.foundation.layout.Box(
-                        Modifier.size(34.dp)
-                            .background(color, if (sel) RoundedCornerShape(10.dp) else CircleShape)
-                            .then(
-                                if (sel) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
-                                else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
-                            )
-                            .clickable {
-                                if (dark) dev.memehammad.widgets.Palette.setHome(context, dark = spec)
-                                else dev.memehammad.widgets.Palette.setHome(context, light = spec)
-                                home = dev.memehammad.widgets.Palette.home(context)
-                                onChange()
-                            },
-                    )
-                }
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        ) {
+            items(P.tones) { tone ->
+                val spec = "$fam:$tone"
+                val sel = spec == selected
+                androidx.compose.foundation.layout.Box(
+                    Modifier.size(34.dp)
+                        .background(col(spec), if (sel) RoundedCornerShape(10.dp) else CircleShape)
+                        .then(
+                            if (sel) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                            else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                        )
+                        .clickable {
+                            when {
+                                part == "back" && dark -> P.setHome(context, dark = spec)
+                                part == "back" -> P.setHome(context, light = spec)
+                                dark -> P.setSymbol(context, dark = spec)
+                                else -> P.setSymbol(context, light = spec)
+                            }
+                            rev++
+                            onChange()
+                        },
+                )
             }
         }
     }

@@ -16,6 +16,7 @@ import dev.memehammad.widgets.Sizes
 import dev.memehammad.widgets.Widgets
 import dev.memehammad.widgets.blob
 import dev.memehammad.widgets.card
+import dev.memehammad.widgets.colorList
 import dev.memehammad.widgets.fitDigits
 import dev.memehammad.widgets.inner
 import dev.memehammad.widgets.place
@@ -182,10 +183,10 @@ object ClockWidget : Kind(
                 val y = (h - d - if (date) ch * 0.5f else 0f) / 2
                 v.place(R.id.c_analog, x, y, d, d)
                 v.setIcon(R.id.c_analog, "setDial", Icon.createWithResource(c, shape.res))
-                v.setColorStateList(R.id.c_analog, "setDialTintList", p.fill)
-                v.setColorStateList(R.id.c_analog, "setHourHandTintList", p.on)
-                v.setColorStateList(R.id.c_analog, "setMinuteHandTintList", chipPaint.fill)
-                v.setColorStateList(
+                v.colorList(R.id.c_analog, "setDialTintList", p.fill)
+                v.colorList(R.id.c_analog, "setHourHandTintList", p.on)
+                v.colorList(R.id.c_analog, "setMinuteHandTintList", chipPaint.fill)
+                v.colorList(
                     R.id.c_analog, "setSecondHandTintList",
                     if (cfg.bool("seconds", true)) chipPaint.fill else android.R.color.transparent,
                 )

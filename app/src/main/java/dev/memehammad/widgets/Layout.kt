@@ -70,13 +70,13 @@ object Blob {
     fun static(c: Context, shape: Shape, color: Int): RemoteViews =
         RemoteViews(c.packageName, R.layout.blob).apply {
             setImageViewResource(R.id.blob, shape.res)
-            setColorStateList(R.id.blob, "setImageTintList", color)
+            colorList(R.id.blob, "setImageTintList", color)
         }
 
     /** A generated animated layout (spin, liquid, morph) tinted [color]. */
     fun animated(c: Context, layout: Int, color: Int): RemoteViews =
         RemoteViews(c.packageName, layout).apply {
-            setColorStateList(R.id.blob, "setIndeterminateTintList", color)
+            colorList(R.id.blob, "setIndeterminateTintList", color)
         }
 
     fun of(c: Context, shape: Shape, color: Int, spin: Boolean) =

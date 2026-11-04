@@ -28,6 +28,31 @@ object Palette {
 
     fun color(c: Context, spec: String): ColorStateList = c.getColorStateList(res(spec))
 
+    /** Colour codes for the Home screen role (resolved per light/dark mode). */
+    const val ICON_BACK = -1
+    const val ICON_SYMBOL = -2
+
+    /** App context, so colour codes can be resolved while drawing widgets. */
+    @Volatile
+    var app: Context? = null
+
+    fun special(code: Int): Pair<ColorStateList, ColorStateList> {
+        val c = app ?: error("Palette.app not set")
+        val (day, night) = if (code == ICON_SYMBOL) symbol(c) else home(c)
+        return color(c, day) to color(c, night)
+    }
+
+    /** Symbol (foreground) tones of themed icons: primary 700 in light mode, primary 100 in dark. */
+    fun symbol(c: Context): Pair<String, String> =
+        (prefs(c).getString("slight", null) ?: "a1:700") to (prefs(c).getString("sdark", null) ?: "a1:100")
+
+    fun setSymbol(c: Context, light: String? = null, dark: String? = null) {
+        prefs(c).edit().apply {
+            if (light != null) putString("slight", light)
+            if (dark != null) putString("sdark", dark)
+        }.apply()
+    }
+
     private fun prefs(c: Context) = c.getSharedPreferences("palette", Context.MODE_PRIVATE)
 
     /**

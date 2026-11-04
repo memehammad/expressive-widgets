@@ -215,7 +215,7 @@ class MainActivity : ComponentActivity() {
                     Surface(shape = RoundedCornerShape(28.dp), color = scheme.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(vertical = 12.dp)) {
                             Text(
-                                "Widget cards set to \"Home screen\" use this colour. Pick the tones that match your app icons.",
+                                "Pick the tones of your themed app icons. Shapes and cards set to \"Home screen\" use them.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = scheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 20.dp),

@@ -118,6 +118,12 @@ class ConfigActivity : ComponentActivity() {
                         item {
                             Group {
                                 Choice(Role.entries.map { it to it.label }, cfg.role) { set("role", it.id) }
+                                if (cfg.role == Role.ICONS) {
+                                    HomeColourPicker {
+                                        Widgets.updateAll(this@ConfigActivity)
+                                        set("homeRev", System.currentTimeMillis())
+                                    }
+                                }
                                 Choice(listOf("tonal" to "Soft", "bold" to "Bold"), cfg.str("fill", "tonal")) { set("fill", it) }
                                 if (kind.id in listOf("clock", "weather", "toggles", "agenda", "activity")) {
                                     SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id !in listOf("agenda", "activity"))) { set("animate", it) }
@@ -135,7 +141,7 @@ class ConfigActivity : ComponentActivity() {
                                 }
                                 if (cfg.card && cfg.cardColor == "icons") {
                                     Text(
-                                        "Home screen colour is shared by all widgets. Pick the tone that matches your icons:",
+                                        "Home screen tones are shared by all widgets. Pick the ones that match your icons:",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
@@ -180,6 +186,7 @@ class ConfigActivity : ComponentActivity() {
                 AndroidView(
                     factory = { ctx ->
                         FrameLayout(ctx).also { frame ->
+                            Palette.app = ctx.applicationContext
                             Sizes.forced = size
                             val rv = try {
                                 kind.render(ctx, widgetId, cfg)

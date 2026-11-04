@@ -9,8 +9,9 @@ The newest section is used as the release notes on GitHub (and shown in Obtainiu
 - **Workout widget:** your latest workout in a shape for its sport (an arrow for runs, a gear for
   rides, a flower for yoga, ...) with distance, time and this week's total. Works with Strava,
   Fitbit, Samsung Health and Google Fit through Health Connect.
-- **Home screen colour:** pick the exact tones (light and dark mode) behind your app icons;
-  every widget card set to "Home screen" uses them.
+- **Home screen colour:** a colour choice for the shapes themselves that matches your themed
+  app icons. Pick the backdrop and symbol tones (light and dark mode) once in the app; any
+  widget set to "Home screen" uses them, for shapes and optionally the card.
 - **New styles:** Trio clock (hours, minutes and the date in three shapes), Pebbles battery
   (five little shapes filling up), Big temperature weather.
 

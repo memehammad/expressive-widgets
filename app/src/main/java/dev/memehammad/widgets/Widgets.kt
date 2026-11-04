@@ -45,6 +45,7 @@ object Widgets {
     }
 
     fun update(context: Context, kind: Kind, ids: IntArray? = null) {
+        Palette.app = context.applicationContext
         val mgr = AppWidgetManager.getInstance(context)
         val all = ids ?: mgr.getAppWidgetIds(ComponentName(context, kind.provider))
         for (id in all) {
