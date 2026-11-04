@@ -39,7 +39,7 @@ object ClockWidget : Kind(
     "clock", "Shape clock", "Hours and minutes in playful shapes, or an analog clock with a shape as the dial.",
     R.drawable.ic_clock, ClockProvider::class.java,
 ) {
-    val styles = listOf("duo" to "Duo", "stacked" to "Stacked", "inline" to "Inline", "analog" to "Analog")
+    val styles = listOf("duo" to "Duo", "trio" to "Trio", "stacked" to "Stacked", "inline" to "Inline", "analog" to "Analog")
 
     override fun defaults() = Cfg().with("style", "duo").with("shape", "cookie9").with("shape2", "clover4")
         .with("role", "primary").with("role2", "tertiary").with("animate", true).with("date", true)
@@ -64,11 +64,15 @@ object ClockWidget : Kind(
 
         // Reset everything (the launcher re-applies old actions on top of the layout).
         v.show(R.id.c_b0, style != "analog")
-        v.show(R.id.c_b1, style == "duo")
+        val trio = style == "trio"
+        v.show(R.id.c_b1, style == "duo" || trio)
+        v.show(R.id.c_b2, trio)
+        v.show(R.id.c_t2, trio)
+        v.show(R.id.c_t3, trio)
         v.show(R.id.c_analog, style == "analog")
         v.show(R.id.c_t0, style != "analog")
-        v.show(R.id.c_t1, style == "duo" || style == "stacked")
-        v.show(R.id.c_chip, date)
+        v.show(R.id.c_t1, style == "duo" || style == "stacked" || trio)
+        v.show(R.id.c_chip, date && !trio)
 
         val m0 = min(w, h) - 2 * pad
         val ch = (m0 * 0.15f).coerceIn(18f, 30f)
@@ -89,6 +93,49 @@ object ClockWidget : Kind(
         }
 
         when (style) {
+            "trio" -> {
+                // Hours, minutes and today's date in three shapes and three colours.
+                val shape3 = Shapes.byId(cfg.str("shape3", "sunny"))
+                val role3 = Role.entries.take(3).firstOrNull { it != cfg.role && it != role2 } ?: Role.SECONDARY
+                val p3 = cfg.paint(role3, cfg.bold)
+                val wide = w > h * 1.6f
+                val s: Float
+                val pos: List<Pair<Float, Float>>
+                if (wide) {
+                    s = min(h - 2 * pad, (w - 2 * pad) / 2.5f)
+                    val left = (w - 2.5f * s) / 2
+                    val top = (h - s) / 2
+                    pos = listOf(left to top - 0.04f * s, left + 0.75f * s to top + 0.04f * s, left + 1.5f * s to top - 0.04f * s)
+                } else {
+                    val m = m0
+                    s = 0.54f * m
+                    val left = (w - m) / 2
+                    val top = (h - m) / 2
+                    pos = listOf(left to top, left + m - s to top + 0.2f * m, left + 0.12f * m to top + m - s)
+                }
+                val ids = listOf(R.id.c_b0, R.id.c_b1, R.id.c_b2)
+                val shapes = listOf(shape, shape2, shape3)
+                val paints = listOf(p, p2, p3)
+                val inners = shapes.mapIndexed { k, sh ->
+                    v.place(ids[k], pos[k].first, pos[k].second, s, s)
+                    v.blob(ids[k], Blob.of(c, sh, paints[k].fill, spin))
+                    sh.inner(pos[k].first, pos[k].second, s, spin)
+                }
+                val ts = inners.minOf { fitDigits(it.side, 2f) }
+                v.textAt(R.id.c_t0, inners[0].cx, inners[0].cy, s, ts)
+                v.textAt(R.id.c_t1, inners[1].cx, inners[1].cy, s, ts)
+                v.textAt(R.id.c_t2, inners[2].cx, inners[2].cy - ts * 0.18f, s, ts * 0.8f)
+                v.textAt(R.id.c_t3, inners[2].cx, inners[2].cy + ts * 0.5f, s, (ts * 0.26f).coerceAtLeast(8f))
+                v.setCharSequence(R.id.c_t0, "setFormat12Hour", "hh")
+                v.setCharSequence(R.id.c_t0, "setFormat24Hour", "HH")
+                v.setCharSequence(R.id.c_t1, "setFormat12Hour", "mm")
+                v.setCharSequence(R.id.c_t1, "setFormat24Hour", "mm")
+                v.textColor(R.id.c_t0, p.on)
+                v.textColor(R.id.c_t1, p2.on)
+                v.textColor(R.id.c_t2, p3.on)
+                v.textColor(R.id.c_t3, p3.on)
+            }
+
             "duo" -> {
                 val wide = w > h * 1.45f
                 val s: Float

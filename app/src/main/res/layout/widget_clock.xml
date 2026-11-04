@@ -48,6 +48,13 @@
             android:layout_gravity="top|left"
             android:visibility="gone" />
 
+        <FrameLayout
+            android:id="@+id/c_b2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:visibility="gone" />
+
         <AnalogClock
             android:id="@+id/c_analog"
             android:layout_width="0dp"
@@ -81,6 +88,32 @@
             android:fontFamily="sans-serif-black"
             android:format12Hour="mm"
             android:format24Hour="mm"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:visibility="gone" />
+
+        <TextClock
+            android:id="@+id/c_t2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:format12Hour="d"
+            android:format24Hour="d"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:visibility="gone" />
+
+        <TextClock
+            android:id="@+id/c_t3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-medium"
+            android:format12Hour="EEE"
+            android:format24Hour="EEE"
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"

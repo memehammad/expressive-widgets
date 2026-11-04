@@ -113,17 +113,47 @@ object BatteryWidget : Kind(
         val low = info.level <= 15 && !info.charging
         val liquid = if (low) Paint(R.color.err_accent, R.color.err_on_accent) else cfg.paint(bold = true)
         val track = if (low) Paint(R.color.err_container, R.color.err_on_container) else cfg.paint(bold = false)
-        v.place(R.id.b_track, x, y, d, d)
-        v.place(R.id.b_liquid, x, y, d, d)
-        v.blob(R.id.b_track, Blob.static(context, shape, track.fill))
-        v.blob(R.id.b_liquid, Blob.animated(context, Liquid.layout(shape.id, info.level), liquid.fill))
-
-        // Percentage in the middle; its colour follows whichever part it sits on.
-        val i = shape.inner(x, y, d, false)
-        val ts = min(fitDigits(i.side, 3.9f), d * 0.3f)
+        val pebbles = cfg.str("style", "liquid") == "pebbles"
+        val pebbleIds = intArrayOf(R.id.b_p0, R.id.b_p1, R.id.b_p2, R.id.b_p3, R.id.b_p4)
+        v.show(R.id.b_track, !pebbles)
+        v.show(R.id.b_liquid, !pebbles)
+        pebbleIds.forEach { v.show(it, pebbles) }
         v.setTextViewText(R.id.b_pct, "${info.level}%")
-        v.textAt(R.id.b_pct, i.cx, i.cy, d, ts)
-        v.textColor(R.id.b_pct, if (info.level >= 55) liquid.on else track.on)
+        if (pebbles) {
+            // Five little shapes, each worth 20 %: full ones solid, the current one part-filled.
+            val area = d
+            val ps = min(area / 5.4f, if (wide) h * 0.42f else area * 0.3f)
+            val gap = (area - 5 * ps) / 4
+            val py = y + area - ps - 2f
+            pebbleIds.forEachIndexed { k, id ->
+                val px = x + k * (ps + gap)
+                v.place(id, px, py, ps, ps)
+                val fill = ((info.level - k * 20) * 5).coerceIn(0, 100)
+                val sh = if (k % 2 == 0) shape else Shapes.byId(cfg.str("shape2", "circle")).takeIf { Liquid.supports(it.id) } ?: shape
+                v.blob(
+                    id,
+                    when (fill) {
+                        100 -> Blob.static(context, sh, liquid.fill)
+                        0 -> Blob.static(context, sh, track.fill)
+                        else -> Blob.animated(context, Liquid.layout(sh.id, fill), liquid.fill)
+                    },
+                )
+            }
+            val ts = min(fitDigits(area, 3.9f), (py - y) * 0.75f)
+            v.textAt(R.id.b_pct, x + area / 2, y + (py - y) / 2, area, ts)
+            v.textColor(R.id.b_pct, if (cfg.card) R.color.w_text else liquid.fill)
+        } else {
+            v.place(R.id.b_track, x, y, d, d)
+            v.place(R.id.b_liquid, x, y, d, d)
+            v.blob(R.id.b_track, Blob.static(context, shape, track.fill))
+            v.blob(R.id.b_liquid, Blob.animated(context, Liquid.layout(shape.id, info.level), liquid.fill))
+
+            // Percentage in the middle; its colour follows whichever part it sits on.
+            val i = shape.inner(x, y, d, false)
+            val ts = min(fitDigits(i.side, 3.9f), d * 0.3f)
+            v.textAt(R.id.b_pct, i.cx, i.cy, d, ts)
+            v.textColor(R.id.b_pct, if (info.level >= 55) liquid.on else track.on)
+        }
 
         // Charging: a morphing, turning badge with a bolt, half over the shape's corner.
         v.show(R.id.b_badge, info.charging)

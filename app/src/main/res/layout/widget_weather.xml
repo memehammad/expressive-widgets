@@ -20,11 +20,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="4dp">
+        <TextView
+            android:id="@+id/wx_big"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:gravity="bottom|left"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/wx_big_cond"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="top|left"
+            android:singleLine="true"
+            android:textColor="@color/w_text"
+            android:visibility="gone" />
+
         <FrameLayout
             android:id="@+id/wx_frame"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:layout_gravity="center">
+            android:layout_gravity="top|left">
 
             <FrameLayout
                 android:id="@+id/wx_blob"

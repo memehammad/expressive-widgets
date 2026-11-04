@@ -246,14 +246,21 @@ object WeatherWidget : Kind(
     override fun render(context: Context, widgetId: Int, cfg: Cfg): RemoteViews =
         Sizes.sized(context, widgetId) { w, h ->
             when {
-                w >= 200f && h >= 190f -> build(context, widgetId, cfg, R.layout.widget_weather_big, 104f)
-                w >= 200f && w > h * 1.5f -> build(context, widgetId, cfg, R.layout.widget_weather_wide, min(h - 16f, 120f))
-                else -> build(context, widgetId, cfg, R.layout.widget_weather, min(w, h) - if (cfg.card) 20f else 8f)
+                w >= 200f && h >= 190f -> build(context, widgetId, cfg, R.layout.widget_weather_big, 104f, w, h)
+                w >= 200f && w > h * 1.5f && cfg.str("style", "shape") == "shape" ->
+                    build(context, widgetId, cfg, R.layout.widget_weather_wide, min(h - 16f, 120f), w, h)
+                else -> build(context, widgetId, cfg, R.layout.widget_weather, min(w, h) - if (cfg.card) 20f else 8f, w, h)
             }
         }
 
-    private fun build(context: Context, widgetId: Int, cfg: Cfg, layout: Int, d: Float): RemoteViews {
+    private fun build(context: Context, widgetId: Int, cfg: Cfg, layout: Int, d0: Float, w: Float, h: Float): RemoteViews {
         val v = RemoteViews(context.packageName, layout)
+        val small = layout == R.layout.widget_weather
+        // "Big" style: a giant temperature with the weather shape as a sticker in the corner.
+        val bigTemp = small && cfg.str("style", "shape") == "big"
+        val aw = w - 8f
+        val ah = h - 8f
+        val d = if (bigTemp) min(aw, ah) * 0.5f else d0
         v.card(context, cfg)
         val now = Weather.cached(context)
         val place = Weather.place(context)
@@ -264,19 +271,35 @@ object WeatherWidget : Kind(
         val spin = cfg.bool("animate", true)
         // Sunshine gets a turning, breathing sun; everything else its shape (turning if animated).
         v.size(R.id.wx_frame, d, d)
+        if (small) v.place(R.id.wx_frame, if (bigTemp) aw - d else (aw - d) / 2, if (bigTemp) 0f else (ah - d) / 2, d, d)
+        v.show(R.id.wx_big, bigTemp)
+        v.show(R.id.wx_big_cond, bigTemp)
+        v.show(R.id.wx_temp, !bigTemp)
         v.blob(
             R.id.wx_blob,
             if (spin && auto && autoShape == "sunny") Blob.animated(context, Morphs.sun, p.fill)
             else Blob.of(context, shape, p.fill, spin),
         )
         val i = shape.inner(0f, 0f, d, spin)
-        val iconSize = i.side * 0.5f
-        v.place(R.id.wx_icon, i.cx - iconSize / 2, i.cy - i.side * 0.47f, iconSize, iconSize)
+        val iconSize = i.side * if (bigTemp) 0.85f else 0.5f
+        v.place(R.id.wx_icon, i.cx - iconSize / 2, if (bigTemp) i.cy - iconSize / 2 else i.cy - i.side * 0.47f, iconSize, iconSize)
         v.setImageViewResource(R.id.wx_icon, icon)
         v.tint(R.id.wx_icon, p.on)
         v.setTextViewText(R.id.wx_temp, now?.let { Weather.deg(it.temp) } ?: "–")
         v.textAt(R.id.wx_temp, i.cx, i.cy + i.side * 0.26f, d, min(fitDigits(i.side, 3.2f), i.side * 0.4f))
         v.textColor(R.id.wx_temp, p.on)
+        if (bigTemp) {
+            val ts = min(ah * 0.62f, aw / (3f * 0.62f))
+            v.place(R.id.wx_big, 0f, ah - ts * 1.2f, aw, ts * 1.2f)
+            v.setTextViewTextSize(R.id.wx_big, android.util.TypedValue.COMPLEX_UNIT_DIP, ts)
+            v.setTextViewText(R.id.wx_big, now?.let { Weather.deg(it.temp) } ?: "–")
+            v.textColor(R.id.wx_big, cfg.paint(bold = true).fill)
+            val cs = (ts * 0.2f).coerceIn(10f, 16f)
+            v.place(R.id.wx_big_cond, 2f, 2f, aw - d - 4f, cs * 1.4f * 2)
+            v.setTextViewTextSize(R.id.wx_big_cond, android.util.TypedValue.COMPLEX_UNIT_DIP, cs)
+            v.setTextViewText(R.id.wx_big_cond, if (now != null) label else "")
+            v.textColor(R.id.wx_big_cond, if (cfg.card) R.color.w_text else R.color.w_text)
+        }
 
         v.setTextViewText(
             R.id.wx_place,

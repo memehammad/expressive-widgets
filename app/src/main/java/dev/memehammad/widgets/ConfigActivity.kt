@@ -210,15 +210,35 @@ class ConfigActivity : ComponentActivity() {
                     SwitchRow("Date", "A little date chip", cfg.bool("date", true)) { set("date", it) }
                     if (style == "analog") SwitchRow("Seconds", "A dot that orbits the dial", cfg.bool("seconds", true)) { set("seconds", it) }
                 }
-                Label(if (style == "duo") "Minutes shape and colour" else "Accent colour")
+                Label(if (style == "duo" || style == "trio") "Minutes shape and colour" else "Accent colour")
                 Group {
-                    if (style == "duo") ShapePicker(cfg.str("shape2", "clover4")) { set("shape2", it) }
+                    if (style == "duo" || style == "trio") ShapePicker(cfg.str("shape2", "clover4")) { set("shape2", it) }
                     Choice(Role.entries.map { it to it.label }, Role.byId(cfg.str("role2", "tertiary"))) { set("role2", it.id) }
+                }
+                if (style == "trio") {
+                    Label("Date shape")
+                    Group { ShapePicker(cfg.str("shape3", "sunny")) { set("shape3", it) } }
+                }
+            }
+            "weather" -> {
+                Label("Style")
+                Group {
+                    Choice(listOf("shape" to "Shape", "big" to "Big temperature"), cfg.str("style", "shape")) { set("style", it) }
                 }
             }
             "battery" -> {
                 Label("Battery")
                 Group {
+                    Choice(listOf("liquid" to "Liquid", "pebbles" to "Pebbles"), cfg.str("style", "liquid")) { set("style", it) }
+                    if (cfg.str("style", "liquid") == "pebbles") {
+                        Text(
+                            "Every other pebble uses this shape:",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                        )
+                        ShapePicker(cfg.str("shape2", "circle"), only = Liquid.shapes) { set("shape2", it) }
+                    }
                     Text(
                         "Charging shows a morphing badge. Accent colour:",
                         style = MaterialTheme.typography.bodySmall,

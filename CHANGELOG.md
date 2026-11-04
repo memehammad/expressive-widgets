@@ -2,7 +2,18 @@
 
 The newest section is used as the release notes on GitHub (and shown in Obtainium).
 
-## 0.2
+## 0.3
+
+- **Steps widget:** today's steps fill a shape towards your goal (4k–15k). Hitting it brings out a
+  turning sun with a tick. Bigger sizes add distance, calories and bars for the week.
+- **Workout widget:** your latest workout in a shape for its sport (an arrow for runs, a gear for
+  rides, a flower for yoga, ...) with distance, time and this week's total. Works with Strava,
+  Fitbit, Samsung Health and Google Fit through Health Connect.
+- **Home screen colour:** pick the exact tones (light and dark mode) behind your app icons;
+  every widget card set to "Home screen" uses them.
+- **New styles:** Trio clock (hours, minutes and the date in three shapes), Pebbles battery
+  (five little shapes filling up), Big temperature weather.
+
 
 Expressive redesign.
 
