@@ -63,7 +63,9 @@ class MainActivity : ComponentActivity() {
 
     private val calendar = mutableStateOf(false)
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    @Deprecated("Activity callback")
+    @Suppress("DEPRECATION")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         calendar.value = AgendaWidget.allowed(this)
         Widgets.updateAll(this)
