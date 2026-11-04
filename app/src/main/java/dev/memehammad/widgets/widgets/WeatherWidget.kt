@@ -293,12 +293,11 @@ object WeatherWidget : Kind(
             v.place(R.id.wx_big, 0f, ah - ts * 1.2f, aw, ts * 1.2f)
             v.setTextViewTextSize(R.id.wx_big, android.util.TypedValue.COMPLEX_UNIT_DIP, ts)
             v.setTextViewText(R.id.wx_big, now?.let { Weather.deg(it.temp) } ?: "–")
-            v.textColor(R.id.wx_big, cfg.paint(bold = true).fill)
+            v.textColor(R.id.wx_big, if (cfg.card) cfg.paint(bold = true).fill else R.color.on_wall)
             val cs = (ts * 0.2f).coerceIn(10f, 16f)
             v.place(R.id.wx_big_cond, 2f, 2f, aw - d - 4f, cs * 1.4f * 2)
             v.setTextViewTextSize(R.id.wx_big_cond, android.util.TypedValue.COMPLEX_UNIT_DIP, cs)
             v.setTextViewText(R.id.wx_big_cond, if (now != null) label else "")
-            v.textColor(R.id.wx_big_cond, if (cfg.card) R.color.w_text else R.color.w_text)
         }
 
         v.setTextViewText(

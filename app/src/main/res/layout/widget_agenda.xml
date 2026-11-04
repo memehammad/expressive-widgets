@@ -74,7 +74,10 @@
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
                 android:text="Wednesday"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="18sp" />
 
             <TextView
@@ -83,7 +86,10 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="November"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
@@ -126,6 +132,9 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:padding="12dp"
+            android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
             android:textColor="@color/w_text2"
             android:textSize="13sp" />
     </FrameLayout>

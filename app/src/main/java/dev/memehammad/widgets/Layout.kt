@@ -100,3 +100,18 @@ fun Shape.inner(x: Float, y: Float, side: Float, spinning: Boolean): Inner {
     val b = if (spinning) spinBox else box
     return Inner(x + b.cx * side, y + b.cy * side, b.half * 2 * side)
 }
+
+/**
+ * Keeps text off the liquid's wavy surface (where it would be half on each colour): returns the
+ * text's centre y and whether it sits on the liquid. [half] is half the text block's height.
+ */
+fun floatOnLiquid(y: Float, d: Float, pct: Int, cy: Float, half: Float): Pair<Float, Boolean> {
+    val line = y + d * (109f - 118f * pct / 100f) / 100f
+    val m = d * 0.06f
+    return when {
+        cy - half > line + m -> cy to true
+        cy + half < line - m -> cy to false
+        line - m - 2 * half >= y + d * 0.1f -> (line - m - half) to false
+        else -> kotlin.math.min(line + m + half, y + d * 0.9f - half) to true
+    }
+}

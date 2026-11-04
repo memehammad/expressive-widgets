@@ -12,6 +12,11 @@ The newest section is used as the release notes on GitHub (and shown in Obtainiu
 - **Home screen colour:** a colour choice for the shapes themselves that matches your themed
   app icons. Pick the backdrop and symbol tones (light and dark mode) once in the app; any
   widget set to "Home screen" uses them, for shapes and optionally the card.
+- **Custom colour:** pick any wallpaper tone for a widget's shapes (light and dark mode); text
+  colour is chosen for contrast automatically.
+- **Better contrast:** numbers in liquid shapes move off the waterline instead of sitting half on
+  each colour; text drawn without a card is white with a soft shadow, like icon labels.
+- The shape picker shows every shape in the widget's own colour.
 - **New styles:** Trio clock (hours, minutes and the date in three shapes), Pebbles battery
   (five little shapes filling up), Big temperature weather.
 

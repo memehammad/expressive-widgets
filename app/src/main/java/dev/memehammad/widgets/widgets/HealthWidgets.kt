@@ -20,6 +20,7 @@ import dev.memehammad.widgets.Widgets
 import dev.memehammad.widgets.blob
 import dev.memehammad.widgets.card
 import dev.memehammad.widgets.fitDigits
+import dev.memehammad.widgets.floatOnLiquid
 import dev.memehammad.widgets.inner
 import dev.memehammad.widgets.place
 import dev.memehammad.widgets.show
@@ -104,8 +105,11 @@ object StepsWidget : Kind(
         val i = shape.inner(x, y, d, false)
         val ts = min(fitDigits(i.side, 5.2f), d * 0.24f)
         v.setTextViewText(R.id.s_num, if (data == null) "–" else fmt(steps))
-        v.textAt(R.id.s_num, i.cx, i.cy - ts * 0.3f, d, ts)
-        v.textColor(R.id.s_num, if (pct >= 50) liquid.on else track.on)
+        val (by, onLiquid) = floatOnLiquid(y, d, pct, i.cy + ts * 0.16f, ts * 0.8f)
+        val shift = by - (i.cy + ts * 0.16f)
+        val textOn = if (onLiquid) liquid.on else track.on
+        v.textAt(R.id.s_num, i.cx, i.cy - ts * 0.3f + shift, d, ts)
+        v.textColor(R.id.s_num, textOn)
         v.setTextViewText(
             R.id.s_sub,
             when {
@@ -114,8 +118,8 @@ object StepsWidget : Kind(
                 else -> "connect in app"
             },
         )
-        v.textAt(R.id.s_sub, i.cx, i.cy + ts * 0.62f, d, (ts * 0.42f).coerceAtLeast(9f))
-        v.textColor(R.id.s_sub, if (pct >= 30) liquid.on else track.on)
+        v.textAt(R.id.s_sub, i.cx, i.cy + ts * 0.62f + shift, d, (ts * 0.42f).coerceAtLeast(9f))
+        v.textColor(R.id.s_sub, textOn)
 
         // Goal reached: a turning, breathing sun with a tick.
         v.show(R.id.s_badge, done)

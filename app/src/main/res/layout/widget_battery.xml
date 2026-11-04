@@ -92,6 +92,9 @@
 
         <TextView
             android:id="@+id/b_pct"
+            android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top|left"
@@ -135,7 +138,10 @@
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="16sp" />
 
             <TextView

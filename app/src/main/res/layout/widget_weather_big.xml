@@ -86,7 +86,10 @@
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="17sp" />
 
             <TextView
@@ -94,7 +97,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="13sp" />
 
             <TextView
@@ -102,7 +108,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="13sp" />
 
             <TextView
@@ -110,7 +119,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp"
                 android:visibility="gone" />
         </LinearLayout>
@@ -139,7 +151,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="11sp" />
 
             <ImageView
@@ -155,7 +170,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -172,7 +190,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="11sp" />
 
             <ImageView
@@ -188,7 +209,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -205,7 +229,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="11sp" />
 
             <ImageView
@@ -221,7 +248,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -238,7 +268,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="11sp" />
 
             <ImageView
@@ -254,7 +287,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -271,7 +307,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="11sp" />
 
             <ImageView
@@ -287,7 +326,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -304,7 +346,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textColor="@color/w_text2"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text2"
                 android:textSize="11sp" />
 
             <ImageView
@@ -320,7 +365,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
-                android:textColor="@color/w_text"
+                android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:textColor="@color/w_text"
                 android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>

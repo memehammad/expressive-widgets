@@ -38,8 +38,35 @@ object Palette {
 
     fun special(code: Int): Pair<ColorStateList, ColorStateList> {
         val c = app ?: error("Palette.app not set")
-        val (day, night) = if (code == ICON_SYMBOL) symbol(c) else home(c)
+        val (day, night) = when {
+            code == ICON_SYMBOL -> symbol(c)
+            code == ICON_BACK -> home(c)
+            else -> decode(code)
+        }
         return color(c, day) to color(c, night)
+    }
+
+    private fun index(spec: String): Int {
+        val (f, t) = spec.split(":").let { it[0] to (it.getOrNull(1)?.toIntOrNull() ?: 100) }
+        val fi = families.indexOfFirst { it.first == f }.coerceAtLeast(0)
+        val ti = tones.indexOf(t).coerceAtLeast(0)
+        return fi * tones.size + ti
+    }
+
+    private fun spec(index: Int) = "${families[index / tones.size].first}:${tones[index % tones.size]}"
+
+    /** A light/dark tone pair packed into a negative colour code (see colorList). */
+    fun code(day: String, night: String): Int = -(1_000_000 + index(day) * 1000 + index(night))
+
+    private fun decode(code: Int): Pair<String, String> {
+        val n = -code - 1_000_000
+        return spec(n / 1000) to spec(n % 1000)
+    }
+
+    /** A readable text tone on top of [spec]: very dark on light tones, very light on dark ones. */
+    fun onFor(spec: String): String {
+        val (f, t) = spec.split(":").let { it[0] to (it.getOrNull(1)?.toIntOrNull() ?: 100) }
+        return if (t <= 400) "$f:900" else "$f:50"
     }
 
     /** Symbol (foreground) tones of themed icons: primary 700 in light mode, primary 100 in dark. */

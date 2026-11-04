@@ -13,7 +13,10 @@ enum class Role(val id: String, val label: String, val container: Int, val onCon
     NEUTRAL("neutral", "Neutral", R.color.neutral_container, R.color.neutral_on_container, R.color.neutral_accent, R.color.neutral_on_accent),
 
     /** The tones behind and on your themed app icons (picked in the app); bold swaps them. */
-    ICONS("icons", "Home screen", Palette.ICON_BACK, Palette.ICON_SYMBOL, Palette.ICON_SYMBOL, Palette.ICON_BACK);
+    ICONS("icons", "Home screen", Palette.ICON_BACK, Palette.ICON_SYMBOL, Palette.ICON_SYMBOL, Palette.ICON_BACK),
+
+    /** Any wallpaper tone, picked per widget (text colour is chosen for contrast). */
+    CUSTOM("custom", "Custom", 0, 0, 0, 0);
 
     companion object {
         fun byId(id: String?) = entries.firstOrNull { it.id == id } ?: PRIMARY
@@ -47,7 +50,15 @@ class Cfg(val json: JSONObject = JSONObject()) {
     private fun clashes(r: Role) = card && cardColor == r.id
 
     fun paint(role: Role = this.role, bold: Boolean = this.bold) =
-        if (bold) Paint(role.accent, role.onAccent) else Paint(role.container, role.onContainer)
+        if (role == Role.CUSTOM) {
+            val (day, night) = customFill
+            val fill = Palette.code(day, night)
+            val on = Palette.code(Palette.onFor(day), Palette.onFor(night))
+            if (bold) Paint(on, fill) else Paint(fill, on)
+        } else if (bold) Paint(role.accent, role.onAccent) else Paint(role.container, role.onContainer)
+
+    /** Custom shape colour: one tone for light mode, one for dark mode. */
+    val customFill get() = str("cfill_l", "a1:300") to str("cfill_d", "a1:400")
 }
 
 val cardColors = listOf(
@@ -94,9 +105,26 @@ fun RemoteViews.textColor(id: Int, color: Int) {
 }
 fun RemoteViews.show(id: Int, visible: Boolean) = setViewVisibility(id, if (visible) android.view.View.VISIBLE else android.view.View.GONE)
 
-/** Shows the optional card behind a widget, in its light- and dark-mode colours. */
+/** Text drawn straight on a widget (not inside a shape): ids per widget layout. */
+private val plainText = intArrayOf(
+    R.id.a_weekday, R.id.b_title, R.id.hv0, R.id.hv1, R.id.hv2, R.id.hv3, R.id.hv4, R.id.hv5, R.id.s_title,
+    R.id.tl0, R.id.tl1, R.id.tl2, R.id.tl3, R.id.wc0, R.id.wc1, R.id.wc2, R.id.wt0, R.id.wt1, R.id.wt2,
+    R.id.wx_big_cond, R.id.wx_place, R.id.wx_rain, R.id.x_title,
+)
+private val plainText2 = intArrayOf(
+    R.id.a_empty, R.id.a_month, R.id.ht0, R.id.ht1, R.id.ht2, R.id.ht3, R.id.ht4, R.id.ht5,
+    R.id.s_day0, R.id.s_day1, R.id.s_day2, R.id.s_day3, R.id.s_day4, R.id.s_day5, R.id.s_day6,
+    R.id.wd0, R.id.wd1, R.id.wd2, R.id.wx_cond, R.id.wx_range,
+)
+
+/**
+ * Shows the optional card behind a widget, in its light- and dark-mode colours. Without a card,
+ * plain text turns white with a soft shadow (like icon labels) so it reads on any wallpaper.
+ */
 fun RemoteViews.card(c: android.content.Context, cfg: Cfg) {
     setInt(android.R.id.background, "setBackgroundResource", 0)
+    plainText.forEach { textColor(it, if (cfg.card) R.color.w_text else R.color.on_wall) }
+    plainText2.forEach { textColor(it, if (cfg.card) R.color.w_text2 else R.color.on_wall2) }
     show(R.id.w_card, cfg.card)
     if (cfg.card) {
         val (day, night) = Palette.card(c, cfg.cardColor)

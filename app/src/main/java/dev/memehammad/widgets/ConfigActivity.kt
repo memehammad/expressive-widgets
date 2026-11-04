@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.memehammad.widgets.ui.AppTheme
 import dev.memehammad.widgets.ui.Choice
+import dev.memehammad.widgets.ui.CustomColourPicker
 import dev.memehammad.widgets.ui.Group
 import dev.memehammad.widgets.ui.HomeColourPicker
 import dev.memehammad.widgets.ui.Label
@@ -75,9 +76,18 @@ class ConfigActivity : ComponentActivity() {
         Configs.save(this, widgetId, Widgets.cfg(this, widgetId, kind))
         Widgets.update(this, kind, intArrayOf(widgetId))
 
+        Palette.app = applicationContext
         setContent {
             AppTheme {
                 var cfg by remember { mutableStateOf(Widgets.cfg(this, widgetId, kind)) }
+                val dark = androidx.compose.foundation.isSystemInDarkTheme()
+                // The widget's shape colour, for the shape picker.
+                val fill = cfg.paint().fill.let { code ->
+                    androidx.compose.ui.graphics.Color(
+                        if (code >= 0) getColor(code)
+                        else Palette.special(code).let { if (dark) it.second else it.first }.defaultColor,
+                    )
+                }
                 fun set(k: String, v: Any) {
                     cfg = cfg.with(k, v)
                     Configs.save(this, widgetId, cfg)
@@ -105,11 +115,11 @@ class ConfigActivity : ComponentActivity() {
                         item {
                             Group {
                                 when (kind.id) {
-                                    "battery" -> ShapePicker(cfg.shape.id, only = Liquid.shapes) { set("shape", it) }
-                                    "weather" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Weather") { set("shape", it) }
-                                    "steps" -> ShapePicker(cfg.shape.id, only = Liquid.shapes) { set("shape", it) }
-                                    "activity" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Sport") { set("shape", it) }
-                                    else -> ShapePicker(cfg.shape.id) { set("shape", it) }
+                                    "battery" -> ShapePicker(cfg.shape.id, only = Liquid.shapes, tint = fill) { set("shape", it) }
+                                    "weather" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Weather", tint = fill) { set("shape", it) }
+                                    "steps" -> ShapePicker(cfg.shape.id, only = Liquid.shapes, tint = fill) { set("shape", it) }
+                                    "activity" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Sport", tint = fill) { set("shape", it) }
+                                    else -> ShapePicker(cfg.shape.id, tint = fill) { set("shape", it) }
                                 }
                             }
                         }
@@ -118,6 +128,10 @@ class ConfigActivity : ComponentActivity() {
                         item {
                             Group {
                                 Choice(Role.entries.map { it to it.label }, cfg.role) { set("role", it.id) }
+                                if (cfg.role == Role.CUSTOM) {
+                                    val (day, night) = cfg.customFill
+                                    CustomColourPicker(day, night) { dark, spec -> set(if (dark) "cfill_d" else "cfill_l", spec) }
+                                }
                                 if (cfg.role == Role.ICONS) {
                                     HomeColourPicker {
                                         Widgets.updateAll(this@ConfigActivity)
@@ -188,14 +202,14 @@ class ConfigActivity : ComponentActivity() {
                         FrameLayout(ctx).also { frame ->
                             Palette.app = ctx.applicationContext
                             Sizes.forced = size
-                            val rv = try {
-                                kind.render(ctx, widgetId, cfg)
+                            val view = try {
+                                kind.render(ctx, widgetId, cfg).apply(ctx, frame)
                             } catch (e: Exception) {
-                                null
+                                android.widget.TextView(ctx).apply { text = "Preview failed: ${e.message}" }
                             } finally {
                                 Sizes.forced = null
                             }
-                            rv?.let { frame.addView(runCatching { it.apply(ctx, frame) }.getOrNull() ?: return@let) }
+                            frame.addView(view)
                         }
                     },
                     modifier = Modifier.requiredSize(size.width.dp, size.height.dp).graphicsLayer(scaleX = scale, scaleY = scale),

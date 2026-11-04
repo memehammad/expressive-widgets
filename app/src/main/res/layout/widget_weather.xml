@@ -22,6 +22,9 @@
     android:padding="4dp">
         <TextView
             android:id="@+id/wx_big"
+            android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_gravity="top|left"
@@ -40,6 +43,9 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="top|left"
             android:singleLine="true"
+            android:shadowColor="#59000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
             android:textColor="@color/w_text"
             android:visibility="gone" />
 

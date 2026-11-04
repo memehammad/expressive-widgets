@@ -63,7 +63,13 @@ fun Group(content: @Composable () -> Unit) {
  * choice; [autoLabel] adds a first "automatic" entry with id "auto".
  */
 @Composable
-fun ShapePicker(selected: String, only: List<String>? = null, autoLabel: String? = null, onPick: (String) -> Unit) {
+fun ShapePicker(
+    selected: String,
+    only: List<String>? = null,
+    autoLabel: String? = null,
+    tint: Color? = null,
+    onPick: (String) -> Unit,
+) {
     val scheme = MaterialTheme.colorScheme
     val shapes = Shapes.all.filter { only == null || it.id in only }
     val sel = if (selected == "auto") "auto" else Shapes.byId(selected).id
@@ -77,21 +83,29 @@ fun ShapePicker(selected: String, only: List<String>? = null, autoLabel: String?
             }
         }
         items(shapes, key = { it.id }) { s ->
-            PickerItem(s.res, s.label, s.id == sel, scheme.primary) { onPick(s.id) }
+            PickerItem(s.res, s.label, s.id == sel, scheme.primary, tint) { onPick(s.id) }
         }
     }
 }
 
 @Composable
-private fun PickerItem(res: Int, label: String, selected: Boolean, accent: Color, onClick: () -> Unit) {
+private fun PickerItem(res: Int, label: String, selected: Boolean, accent: Color, tint: Color? = null, onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable(onClick = onClick)) {
-        Image(
-            painterResource(res),
-            contentDescription = label,
-            colorFilter = ColorFilter.tint(if (selected) accent else scheme.surfaceContainerHighest),
-            modifier = Modifier.size(52.dp),
-        )
+        // With [tint], every shape is shown in the widget's own colour; the chosen one is ringed.
+        androidx.compose.foundation.layout.Box(
+            Modifier.size(60.dp).then(
+                if (selected && tint != null) Modifier.border(2.dp, accent, RoundedCornerShape(18.dp)) else Modifier,
+            ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Image(
+                painterResource(res),
+                contentDescription = label,
+                colorFilter = ColorFilter.tint(tint ?: if (selected) accent else scheme.surfaceContainerHighest),
+                modifier = Modifier.size(48.dp),
+            )
+        }
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
@@ -235,4 +249,46 @@ fun HomeColourPicker(onChange: () -> Unit) {
             }
         }
     }
+}
+
+/** Swatches of every wallpaper tone; [selected] is a spec like "a1:300". */
+@Composable
+fun ToneGrid(selected: String, onPick: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val P = dev.memehammad.widgets.Palette
+    for ((fam, label) in P.families) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 20.dp, top = 4.dp),
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        ) {
+            items(P.tones) { tone ->
+                val spec = "$fam:$tone"
+                val sel = spec == selected
+                androidx.compose.foundation.layout.Box(
+                    Modifier.size(34.dp)
+                        .background(Color(context.getColor(P.res(spec))), if (sel) RoundedCornerShape(10.dp) else CircleShape)
+                        .then(
+                            if (sel) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                            else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                        )
+                        .clickable { onPick(spec) },
+                )
+            }
+        }
+    }
+}
+
+/** Custom shape colour for one widget: a tone for light mode and one for dark mode. */
+@Composable
+fun CustomColourPicker(day: String, night: String, onPick: (dark: Boolean, spec: String) -> Unit) {
+    val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+    var dark by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(systemDark) }
+    Choice(listOf(false to "Light mode", true to "Dark mode"), dark) { dark = it }
+    ToneGrid(if (dark) night else day) { onPick(dark, it) }
 }

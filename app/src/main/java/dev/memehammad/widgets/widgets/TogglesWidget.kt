@@ -150,7 +150,6 @@ object TogglesWidget : Kind(
             v.setImageViewResource(icon, t.icon)
             v.tint(icon, if (on) p.on else R.color.w_text2)
             v.setTextViewText(label, t.label)
-            v.textColor(label, if (cfg.card) R.color.w_text else R.color.w_text)
             v.show(label, cfg.bool("labels", true))
             val direct = !t.needsShell || shell
             val intent = if (direct) {

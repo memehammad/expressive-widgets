@@ -15,6 +15,7 @@ import dev.memehammad.widgets.Shapes
 import dev.memehammad.widgets.Sizes
 import dev.memehammad.widgets.blob
 import dev.memehammad.widgets.fitDigits
+import dev.memehammad.widgets.floatOnLiquid
 import dev.memehammad.widgets.inner
 import dev.memehammad.widgets.place
 import dev.memehammad.widgets.size
@@ -141,7 +142,7 @@ object BatteryWidget : Kind(
             }
             val ts = min(fitDigits(area, 3.9f), (py - y) * 0.75f)
             v.textAt(R.id.b_pct, x + area / 2, y + (py - y) / 2, area, ts)
-            v.textColor(R.id.b_pct, if (cfg.card) R.color.w_text else liquid.fill)
+            v.textColor(R.id.b_pct, if (cfg.card) R.color.w_text else R.color.on_wall)
         } else {
             v.place(R.id.b_track, x, y, d, d)
             v.place(R.id.b_liquid, x, y, d, d)
@@ -151,8 +152,9 @@ object BatteryWidget : Kind(
             // Percentage in the middle; its colour follows whichever part it sits on.
             val i = shape.inner(x, y, d, false)
             val ts = min(fitDigits(i.side, 3.9f), d * 0.3f)
-            v.textAt(R.id.b_pct, i.cx, i.cy, d, ts)
-            v.textColor(R.id.b_pct, if (info.level >= 55) liquid.on else track.on)
+            val (ty, onLiquid) = floatOnLiquid(y, d, info.level, i.cy, ts * 0.45f)
+            v.textAt(R.id.b_pct, i.cx, ty, d, ts)
+            v.textColor(R.id.b_pct, if (onLiquid) liquid.on else track.on)
         }
 
         // Charging: a morphing, turning badge with a bolt, half over the shape's corner.
