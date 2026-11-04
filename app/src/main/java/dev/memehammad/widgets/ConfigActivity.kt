@@ -53,6 +53,10 @@ import dev.memehammad.widgets.ui.Picks
 import dev.memehammad.widgets.ui.ShapePicker
 import dev.memehammad.widgets.ui.SwitchRow
 import dev.memehammad.widgets.widgets.ClockWidget
+import dev.memehammad.widgets.widgets.CountdownWidget
+import dev.memehammad.widgets.widgets.DiceWidget
+import dev.memehammad.widgets.widgets.ProgressWidget
+import dev.memehammad.widgets.widgets.TimerWidget
 import dev.memehammad.widgets.widgets.StepsWidget
 import dev.memehammad.widgets.widgets.TogglesWidget
 import dev.memehammad.widgets.widgets.WorldClockWidget
@@ -117,7 +121,7 @@ class ConfigActivity : ComponentActivity() {
                                 when (kind.id) {
                                     "battery" -> ShapePicker(cfg.shape.id, only = Liquid.shapes, tint = fill) { set("shape", it) }
                                     "weather" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Weather", tint = fill) { set("shape", it) }
-                                    "steps" -> ShapePicker(cfg.shape.id, only = Liquid.shapes, tint = fill) { set("shape", it) }
+                                    "steps", "progress" -> ShapePicker(cfg.shape.id, only = Liquid.shapes, tint = fill) { set("shape", it) }
                                     "activity" -> ShapePicker(cfg.str("shape", "auto"), autoLabel = "Sport", tint = fill) { set("shape", it) }
                                     else -> ShapePicker(cfg.shape.id, tint = fill) { set("shape", it) }
                                 }
@@ -139,8 +143,8 @@ class ConfigActivity : ComponentActivity() {
                                     }
                                 }
                                 Choice(listOf("tonal" to "Soft (pale shape)", "bold" to "Bold (strong shape)"), cfg.str("fill", "tonal")) { set("fill", it) }
-                                if (kind.id in listOf("clock", "weather", "toggles", "agenda", "activity")) {
-                                    SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id !in listOf("agenda", "activity"))) { set("animate", it) }
+                                if (kind.id in listOf("clock", "weather", "toggles", "agenda", "activity", "alarm", "countdown", "timer", "moon", "dice")) {
+                                    SwitchRow("Animate", "Shapes slowly turn (and the sun breathes)", cfg.bool("animate", kind.id !in listOf("agenda", "activity", "moon", "dice"))) { set("animate", it) }
                                 }
                             }
                         }
@@ -306,6 +310,50 @@ class ConfigActivity : ComponentActivity() {
                 }
                 Label("Goal colour")
                 Group { RoleChoice(Role.byId(cfg.str("role2", "tertiary")), true, cfg) { set("role2", it.id) } }
+            }
+            "countdown" -> {
+                Label("Countdown")
+                Group {
+                    androidx.compose.material3.OutlinedTextField(
+                        value = cfg.str("title", "Holidays"),
+                        onValueChange = { set("title", it) },
+                        singleLine = true,
+                        label = { Text("What are you counting down to?") },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                    val d = CountdownWidget.date(cfg)
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(d.toString(), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                        TextButton(onClick = {
+                            android.app.DatePickerDialog(this@ConfigActivity, { _, y, m, day ->
+                                set("date", java.time.LocalDate.of(y, m + 1, day).toString())
+                            }, d.year, d.monthValue - 1, d.dayOfMonth).show()
+                        }) { Text("Pick date") }
+                    }
+                }
+                Label("Last-week badge colour")
+                Group { RoleChoice(Role.byId(cfg.str("role2", "primary")), true, cfg) { set("role2", it.id) } }
+            }
+            "progress" -> {
+                Label("Progress of")
+                Group { Choice(ProgressWidget.periods, cfg.str("period", "year")) { set("period", it) } }
+            }
+            "timer" -> {
+                Label("Length")
+                Group { Choice(TimerWidget.lengths.map { it to "$it min" }, cfg.int("minutes", 25)) { set("minutes", it) } }
+                Label("Done colour")
+                Group { RoleChoice(Role.byId(cfg.str("role2", "primary")), true, cfg) { set("role2", it.id) } }
+            }
+            "dice" -> {
+                Label("Roll")
+                Group {
+                    Choice(DiceWidget.modes, cfg.str("mode", "d6")) { set("mode", it) }
+                    SwitchRow("Surprise me", "Each roll lands in a random shape and colour", cfg.bool("shuffle", true)) { set("shuffle", it) }
+                }
+            }
+            "moon" -> {
+                Label("Moon")
+                Group { SwitchRow("Show how lit it is", null, cfg.bool("label", true)) { set("label", it) } }
             }
             "world" -> {
                 Label("Cities (up to 3)")

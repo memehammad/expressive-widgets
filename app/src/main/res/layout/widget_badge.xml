@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generic "shape with a number" widget canvas (alarm, countdown, moon, progress, timer, dice). Placed in code. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToOutline="true">
+
+    <ImageView
+        android:id="@+id/w_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/w_card"
+        android:tint="@color/card_icons"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/g_stage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <FrameLayout
+            android:id="@+id/g_track"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left"
+            android:visibility="gone">        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/g_blob"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left"
+            android:visibility="visible">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shp_cookie9"
+                android:tint="@color/primary_container" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/g_icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/g_num"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="7"
+            android:textColor="@color/primary_on_container"
+            android:textSize="36sp"
+            android:visibility="visible" />
+
+        <Chronometer
+            android:id="@+id/g_chrono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/primary_on_container"
+            android:textSize="30sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/g_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/primary_on_container"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/g_badge"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/g_badge_icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/g_info"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="top|left"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/g_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="2"
+                android:shadowColor="#59000000"
+                android:shadowDy="1"
+                android:shadowRadius="3"
+                android:textColor="@color/w_text"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/g_c0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/w_pill"
+                android:backgroundTint="@color/primary_container"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:singleLine="true"
+                android:textColor="@color/primary_on_container"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/g_c1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/w_pill"
+                android:backgroundTint="@color/secondary_container"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:singleLine="true"
+                android:textColor="@color/secondary_on_container"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/g_c2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/w_pill"
+                android:backgroundTint="@color/tertiary_container"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:singleLine="true"
+                android:textColor="@color/tertiary_on_container"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

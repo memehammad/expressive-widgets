@@ -16,6 +16,7 @@ Android 12 or newer. Work in progress: Home Assistant widgets are coming.
   account); wider sizes add highs and lows, rain and the next hours.
 - **Agenda:** today's date in a shape and your next events from the calendars on your phone.
 - **Steps** and **Workout:** from Health Connect (Strava, Fitbit, Samsung Health, Google Fit).
+- **Next alarm, Countdown, Focus timer, Progress, Moon, Dice:** small, fun and customizable.
 - **World clocks:** up to three cities with local time, day and time difference.
 - **Battery:** a shape that fills with wavy, moving liquid; wider sizes show watts, time to full,
   temperature, cycles and, with Shizuku, battery health.

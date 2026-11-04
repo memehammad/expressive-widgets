@@ -2,6 +2,19 @@
 
 The newest section is used as the release notes on GitHub (and shown in Obtainium).
 
+## 0.4
+
+Six new widgets:
+
+- **Next alarm:** your next alarm in a turning shape, with how long until it rings.
+- **Countdown:** days until (or since) any date. The last week gets a pulsing badge; on the day
+  it becomes a breathing sun.
+- **Focus timer:** tap to start (5–60 min); the shape turns and counts down, then celebrates.
+- **Progress:** how much of the year, month, week or day is done, as liquid in a shape.
+- **Moon:** tonight's phase drawn in a shape, how lit it is, and the next full and new moon.
+- **Dice:** roll a die or a D20, flip a coin or ask yes / no / maybe. Every roll lands in a
+  new shape and colour.
+
 ## 0.3
 
 - **Steps widget:** today's steps fill a shape towards your goal (4k–15k). Hitting it brings out a

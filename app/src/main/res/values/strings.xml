@@ -19,4 +19,16 @@
     <string name="w_activity">Workout</string>
     <string name="w_activity_desc">Your latest workout from Health Connect (Strava, Fit, …)</string>
     <string name="health_rationale">Expressive Widgets reads your steps, distance, active calories and workouts from Health Connect only to show them in its widgets. Nothing is stored anywhere else or sent off your phone.</string>
+    <string name="w_alarm">Next alarm</string>
+    <string name="w_alarm_desc">Your next alarm in a shape, with how long until it rings</string>
+    <string name="w_countdown">Countdown</string>
+    <string name="w_countdown_desc">Days until (or since) a date you care about</string>
+    <string name="w_moon">Moon</string>
+    <string name="w_moon_desc">Tonight\'s moon phase in a shape</string>
+    <string name="w_progress">Progress</string>
+    <string name="w_progress_desc">How much of the year, month, week or day is done</string>
+    <string name="w_timer">Focus timer</string>
+    <string name="w_timer_desc">Tap to start a focus timer; the shape turns while it runs</string>
+    <string name="w_dice">Dice</string>
+    <string name="w_dice_desc">Roll a die, flip a coin or let it decide: yes, no or maybe</string>
 </resources>

@@ -97,6 +97,89 @@
         </activity-alias>
 
         <receiver
+            android:name=".widgets.AlarmProvider"
+            android:exported="true"
+            android:label="@string/w_alarm">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_alarm" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.CountdownProvider"
+            android:exported="true"
+            android:label="@string/w_countdown">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_countdown" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.MoonProvider"
+            android:exported="true"
+            android:label="@string/w_moon">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_moon" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.ProgressProvider"
+            android:exported="true"
+            android:label="@string/w_progress">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_progress" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.TimerProvider"
+            android:exported="true"
+            android:label="@string/w_timer">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_timer" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.DiceProvider"
+            android:exported="true"
+            android:label="@string/w_dice">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/w_dice" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.AlarmChangedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.app.action.NEXT_ALARM_CLOCK_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".widgets.TimerReceiver" android:exported="false" />
+        <receiver android:name=".widgets.DiceReceiver" android:exported="false" />
+
+        <receiver
             android:name=".widgets.StepsProvider"
             android:exported="true"
             android:label="@string/w_steps">
