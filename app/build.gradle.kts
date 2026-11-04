@@ -14,6 +14,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         applicationId = "dev.memehammad.widgets"
         minSdk = 31
         targetSdk = 35
@@ -74,6 +75,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     implementation("androidx.health.connect:connect-client:1.1.0")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 
     // Optional system toggles and battery health: a shell running via Shizuku.
     implementation("dev.rikka.shizuku:api:13.1.5")
