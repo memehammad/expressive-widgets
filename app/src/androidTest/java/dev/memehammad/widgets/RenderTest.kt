@@ -30,6 +30,25 @@ class RenderTest {
             "card_icons" to Cfg().with("role", "icons").with("card", true).with("cardColor", "surface"),
         )
         val sizes = listOf(SizeF(160f, 160f), SizeF(320f, 140f))
+        // Updating an existing widget (what the launcher does): first primary/soft, then tertiary/bold.
+        inst.runOnMainSync {
+            for (kind in Widgets.kinds) {
+                val size = SizeF(160f, 160f)
+                try {
+                    Sizes.forced = size
+                    val a = kind.render(ctx, 0, kind.defaults().with("role", "primary").with("fill", "tonal"))
+                    val b = kind.render(ctx, 0, kind.defaults().with("role", "tertiary").with("fill", "bold"))
+                    Sizes.forced = null
+                    val parent = FrameLayout(ctx)
+                    val v = a.apply(ctx, parent)
+                    b.reapply(ctx, v)
+                    draw(ctx, v, size, File(out, "${kind.id}_reapplied_160x160.png"))
+                } catch (e: Throwable) {
+                    Sizes.forced = null
+                    File(out, "${kind.id}_reapplied.txt").writeText(e.stackTraceToString())
+                }
+            }
+        }
         inst.runOnMainSync {
             for (kind in Widgets.kinds) {
                 for ((name, extra) in variants) {
@@ -61,5 +80,18 @@ class RenderTest {
                 }
             }
         }
+    }
+
+    private fun draw(ctx: android.content.Context, v: View, size: SizeF, file: File) {
+        val d = ctx.resources.displayMetrics.density
+        val w = (size.width * d).toInt()
+        val h = (size.height * d).toInt()
+        v.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY))
+        v.layout(0, 0, w, h)
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmp)
+        canvas.drawColor(Color.rgb(60, 80, 90))
+        v.draw(canvas)
+        file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
 }

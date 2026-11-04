@@ -66,7 +66,7 @@ object Palette {
     /** A readable text tone on top of [spec]: very dark on light tones, very light on dark ones. */
     fun onFor(spec: String): String {
         val (f, t) = spec.split(":").let { it[0] to (it.getOrNull(1)?.toIntOrNull() ?: 100) }
-        return if (t <= 400) "$f:900" else "$f:50"
+        return if (t <= 400) "$f:900" else "$f:10"
     }
 
     /** Symbol (foreground) tones of themed icons: primary 700 in light mode, primary 100 in dark. */

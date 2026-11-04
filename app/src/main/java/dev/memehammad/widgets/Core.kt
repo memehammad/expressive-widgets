@@ -41,13 +41,24 @@ class Cfg(val json: JSONObject = JSONObject()) {
     val shape get() = Shapes.byId(str("shape", "cookie9"))
     val role get() = Role.byId(str("role", "primary"))
     /** "tonal" = soft container colour, "bold" = strong accent colour. */
-    val bold get() = str("fill", "tonal") == "bold" || clashes(role)
+    val bold get() = str("fill", "tonal") == "bold" || clashes(role) || paleOnCard(role)
     val card get() = bool("card", false)
     /** Card colour: "icons" matches themed app icons; "surface" neutral; or a colour role. */
     val cardColor get() = str("cardColor", "icons")
 
     /** A soft shape would vanish on a card of the same colour, so it goes bold there. */
     private fun clashes(r: Role) = card && cardColor == r.id
+
+    /** A soft shape that would barely show on the card (in light or dark mode) goes bold instead. */
+    private fun paleOnCard(r: Role): Boolean {
+        if (!card) return false
+        val c = Palette.app ?: return false
+        return runCatching {
+            val (cd, cn) = Palette.card(c, cardColor).let { Palette.color(c, it.first).defaultColor to Palette.color(c, it.second).defaultColor }
+            val (fd, fn) = Colors.pair(paint(r, false).fill).let { it.first.defaultColor to it.second.defaultColor }
+            contrast(cd, fd) < 1.35 || contrast(cn, fn) < 1.35
+        }.getOrDefault(false)
+    }
 
     fun paint(role: Role = this.role, bold: Boolean = this.bold) =
         if (role == Role.CUSTOM) {
@@ -65,6 +76,17 @@ val cardColors = listOf(
     "icons" to "Home screen", "surface" to "Neutral",
     "primary" to "Primary", "secondary" to "Secondary", "tertiary" to "Tertiary",
 )
+
+/** WCAG contrast ratio between two colours. */
+fun contrast(a: Int, b: Int): Double {
+    fun lum(c: Int): Double {
+        fun ch(v: Int): Double = (v / 255.0).let { if (it <= 0.03928) it / 12.92 else Math.pow((it + 0.055) / 1.055, 2.4) }
+        return 0.2126 * ch((c shr 16) and 255) + 0.7152 * ch((c shr 8) and 255) + 0.0722 * ch(c and 255)
+    }
+    val x = lum(a)
+    val y = lum(b)
+    return (maxOf(x, y) + 0.05) / (minOf(x, y) + 0.05)
+}
 
 object Configs {
     private fun prefs(c: Context) = c.getSharedPreferences("widgets", Context.MODE_PRIVATE)
