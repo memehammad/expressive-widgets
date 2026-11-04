@@ -112,8 +112,8 @@ object BatteryWidget : Kind(
 
         // Low battery switches to the error colours so it stands out.
         val low = info.level <= 15 && !info.charging
-        val liquid = if (low) Paint(R.color.err_accent, R.color.err_on_accent) else cfg.paint(bold = true)
-        val track = if (low) Paint(R.color.err_container, R.color.err_on_container) else cfg.paint(bold = false)
+        val liquid = if (low) Paint(R.color.err_accent, R.color.err_on_accent) else cfg.paint(bold = !cfg.bold)
+        val track = if (low) Paint(R.color.err_container, R.color.err_on_container) else cfg.paint(bold = cfg.bold)
         val pebbles = cfg.str("style", "liquid") == "pebbles"
         val pebbleIds = intArrayOf(R.id.b_p0, R.id.b_p1, R.id.b_p2, R.id.b_p3, R.id.b_p4)
         v.show(R.id.b_track, !pebbles)

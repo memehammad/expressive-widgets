@@ -28,9 +28,9 @@ jobs:
           disable-animations: false
           script: |
             chmod +x gradlew
-            ./gradlew --no-daemon connectedDebugAndroidTest || true
+            ./gradlew --no-daemon connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true || true
             adb pull /sdcard/Android/data/dev.memehammad.widgets/files/renders renders || true
-            adb shell cmd uimode night yes; ./gradlew --no-daemon connectedDebugAndroidTest || true
+            adb shell cmd uimode night yes; ./gradlew --no-daemon connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true || true
             mkdir -p renders_night; adb pull /sdcard/Android/data/dev.memehammad.widgets/files/renders renders_night || true
       - uses: actions/upload-artifact@v4
         with:

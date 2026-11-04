@@ -93,8 +93,9 @@ object StepsWidget : Kind(
         val x = if (big || wide) pad + 2f else (w - d) / 2
         val y = if (big) pad + 2f else (h - d) / 2
         val shape = cfg.shape.takeIf { Liquid.supports(it.id) } ?: Shapes.byId("clover8")
-        val track = cfg.paint(bold = false)
-        val liquid = cfg.paint(bold = true)
+        // Soft: pale shape with strong liquid. Bold: strong shape with pale liquid.
+        val track = cfg.paint(bold = cfg.bold)
+        val liquid = cfg.paint(bold = !cfg.bold)
         val role2 = cfg.paint(Role.byId(cfg.str("role2", "tertiary")), true)
 
         v.place(R.id.s_track, x, y, d, d)
